@@ -35,7 +35,7 @@ const locales = computed(() => {
 });
 const allowedLocales = computed(() => {
   return Object.keys(locales.value).map(key => {
-    return locales.value[key].code;
+    return this.locales.value[key].code;
   });
 });
 
@@ -72,7 +72,7 @@ async function updatePortalLocales({
 
 function changeDefaultLocale({ localeCode }) {
   updatePortalLocales({
-    newAllowedLocales: allowedLocales.value,
+    allowedLocales: allowedLocales.value,
     defaultLocale: localeCode,
     messageKey: 'CHANGE_DEFAULT_LOCALE',
   });
@@ -90,7 +90,7 @@ function deletePortalLocale({ localeCode }) {
   const defaultLocale = currentPortal.value?.meta.default_locale;
 
   updatePortalLocales({
-    newAllowedLocales: updatedLocales,
+    allowedLocales: updatedLocales,
     defaultLocale,
     messageKey: 'DELETE_LOCALE',
   });
@@ -126,7 +126,7 @@ function addLocale() {
       v-if="currentPortal"
       :locales="locales"
       :selected-locale-code="currentPortal.meta.default_locale"
-      @changeDefaultLocale="changeDefaultLocale"
+      @change-default-locale="changeDefaultLocale"
       @delete="deletePortalLocale"
     />
     <woot-modal

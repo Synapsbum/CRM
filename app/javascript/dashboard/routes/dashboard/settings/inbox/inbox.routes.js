@@ -28,15 +28,14 @@ export default {
       children: [
         {
           path: '',
+          name: 'settings_inbox',
           redirect: 'list',
         },
         {
           path: 'list',
           name: 'settings_inbox_list',
           component: InboxHome,
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
         },
         {
           path: 'new',
@@ -46,25 +45,19 @@ export default {
               path: '',
               name: 'settings_inbox_new',
               component: ChannelList,
-              meta: {
-                permissions: ['administrator'],
-              },
+              roles: ['administrator'],
             },
             {
               path: ':inbox_id/finish',
               name: 'settings_inbox_finish',
               component: FinishSetup,
-              meta: {
-                permissions: ['administrator'],
-              },
+              roles: ['administrator'],
             },
             {
               path: ':sub_page',
               name: 'settings_inboxes_page_channel',
               component: channelFactory.create(),
-              meta: {
-                permissions: ['administrator'],
-              },
+              roles: ['administrator'],
               props: route => {
                 return { channel_name: route.params.sub_page };
               },
@@ -72,9 +65,7 @@ export default {
             {
               path: ':inbox_id/agents',
               name: 'settings_inboxes_add_agents',
-              meta: {
-                permissions: ['administrator'],
-              },
+              roles: ['administrator'],
               component: AddAgents,
             },
           ],
@@ -83,9 +74,7 @@ export default {
           path: ':inboxId',
           name: 'settings_inbox_show',
           component: Settings,
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
         },
       ],
     },

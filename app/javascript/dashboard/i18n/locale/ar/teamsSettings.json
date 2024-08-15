@@ -21,10 +21,10 @@
         {
           "title": "إنشاء",
           "route": "settings_teams_new",
-          "body": "إنشاء فريق جديد للوكلاء."
+          "body": "إنشاء فريق جديد من الوكلاء."
         },
         {
-          "title": "إضافة وكلاء",
+          "title": "إضافة موظفين",
           "route": "settings_teams_add_agents",
           "body": "إضافة وكيل إلى فريق."
         },
@@ -68,9 +68,9 @@
       "ERROR_MESSAGE": "تعذر حفظ تفاصيل الفريق. حاول مرة أخرى."
     },
     "AGENTS": {
-      "AGENT": "وكيل",
+      "AGENT": "AGENT",
       "EMAIL": "البريد الإلكتروني",
-      "BUTTON_TEXT": "إضافة وكلاء",
+      "BUTTON_TEXT": "إضافة موظفين",
       "ADD_AGENTS": "إضافة وكلاء إلى فريقك...",
       "SELECT": "حدد",
       "SELECT_ALL": "تحديد جميع الوكلاء",
@@ -82,8 +82,8 @@
       "SELECT": "حدد",
       "SELECT_ALL": "تحديد جميع الوكلاء",
       "SELECTED_COUNT": "تم تحديد %{selected} من أصل %{total} وكيل.",
-      "BUTTON_TEXT": "إضافة وكلاء",
-      "AGENT_VALIDATION_ERROR": "اختر وكيل واحد على الأقل."
+      "BUTTON_TEXT": "إضافة موظفين",
+      "AGENT_VALIDATION_ERROR": "اختيار وكيل واحد على الأقل."
     },
     "FINISH": {
       "TITLE": "أصبح فريقك جاهزة الآن!",

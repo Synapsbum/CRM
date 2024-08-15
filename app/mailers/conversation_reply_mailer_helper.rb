@@ -14,7 +14,6 @@ module ConversationReplyMailerHelper
       @options[:bcc] = cc_bcc_emails[1]
     end
     ms_smtp_settings
-    google_smtp_settings
     set_delivery_method
 
     Rails.logger.info("Email sent from #{email_from} to #{to_emails} with subject #{mail_subject}")
@@ -24,36 +23,23 @@ module ConversationReplyMailerHelper
 
   private
 
-  def google_smtp_settings
-    return unless @inbox.email? && @channel.imap_enabled && @inbox.channel.google?
-
-    smtp_settings = base_smtp_settings('smtp.gmail.com')
-
-    @options[:delivery_method] = :smtp
-    @options[:delivery_method_options] = smtp_settings
-  end
-
   def ms_smtp_settings
-    return unless @inbox.email? && @channel.imap_enabled && @inbox.channel.microsoft?
+    return unless @inbox.email? && @channel.imap_enabled && @inbox.channel.provider == 'microsoft'
 
-    smtp_settings = base_smtp_settings('smtp.office365.com')
-
-    @options[:delivery_method] = :smtp
-    @options[:delivery_method_options] = smtp_settings
-  end
-
-  def base_smtp_settings(domain)
-    {
-      address: domain,
+    smtp_settings = {
+      address: 'smtp.office365.com',
       port: 587,
       user_name: @channel.imap_login,
       password: @channel.provider_config['access_token'],
-      domain: domain,
+      domain: 'smtp.office365.com',
       tls: false,
       enable_starttls_auto: true,
       openssl_verify_mode: 'none',
       authentication: 'xoauth2'
     }
+
+    @options[:delivery_method] = :smtp
+    @options[:delivery_method_options] = smtp_settings
   end
 
   def set_delivery_method
@@ -83,12 +69,12 @@ module ConversationReplyMailerHelper
     @inbox.inbox_type == 'Email' && @channel.imap_enabled
   end
 
-  def email_oauth_enabled
-    @inbox.inbox_type == 'Email' && (@channel.microsoft? || @channel.google?)
+  def email_microsoft_auth_enabled
+    @inbox.inbox_type == 'Email' && @channel.provider == 'microsoft'
   end
 
   def email_from
-    email_oauth_enabled || email_smtp_enabled ? channel_email_with_name : from_email_with_name
+    email_microsoft_auth_enabled || email_smtp_enabled ? channel_email_with_name : from_email_with_name
   end
 
   def email_reply_to

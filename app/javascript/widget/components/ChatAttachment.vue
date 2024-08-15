@@ -1,3 +1,21 @@
+<template>
+  <file-upload
+    ref="upload"
+    :size="4096 * 2048"
+    :accept="allowedFileTypes"
+    :data="{
+      direct_upload_url: '/api/v1/widget/direct_uploads',
+      direct_upload: true,
+    }"
+    @input-file="onFileUpload"
+  >
+    <button class="icon-button flex items-center justify-center">
+      <fluent-icon v-if="!isUploading.image" icon="attach" />
+      <spinner v-if="isUploading" size="small" />
+    </button>
+  </file-upload>
+</template>
+
 <script>
 import FileUpload from 'vue-upload-component';
 import Spinner from 'shared/components/Spinner.vue';
@@ -78,7 +96,7 @@ export default {
 
           upload.create((error, blob) => {
             if (error) {
-              this.$emitter.emit(BUS_EVENTS.SHOW_ALERT, {
+              window.bus.$emit(BUS_EVENTS.SHOW_ALERT, {
                 message: error,
               });
             } else {
@@ -89,7 +107,7 @@ export default {
             }
           });
         } else {
-          this.$emitter.emit(BUS_EVENTS.SHOW_ALERT, {
+          window.bus.$emit(BUS_EVENTS.SHOW_ALERT, {
             message: this.$t('FILE_SIZE_LIMIT', {
               MAXIMUM_FILE_UPLOAD_SIZE: this.fileUploadSizeLimit,
             }),
@@ -112,7 +130,7 @@ export default {
             ...this.getLocalFileAttributes(file),
           });
         } else {
-          this.$emitter.emit(BUS_EVENTS.SHOW_ALERT, {
+          window.bus.$emit(BUS_EVENTS.SHOW_ALERT, {
             message: this.$t('FILE_SIZE_LIMIT', {
               MAXIMUM_FILE_UPLOAD_SIZE: this.fileUploadSizeLimit,
             }),
@@ -132,21 +150,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <FileUpload
-    ref="upload"
-    :size="4096 * 2048"
-    :accept="allowedFileTypes"
-    :data="{
-      direct_upload_url: '/api/v1/widget/direct_uploads',
-      direct_upload: true,
-    }"
-    @input-file="onFileUpload"
-  >
-    <button class="icon-button flex items-center justify-center">
-      <FluentIcon v-if="!isUploading.image" icon="attach" />
-      <Spinner v-if="isUploading" size="small" />
-    </button>
-  </FileUpload>
-</template>

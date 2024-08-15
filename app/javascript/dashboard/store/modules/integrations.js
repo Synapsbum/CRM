@@ -20,18 +20,28 @@ const state = {
   },
 };
 
+const isAValidAppIntegration = integration => {
+  return [
+    'dialogflow',
+    'dyte',
+    'google_translate',
+    'openai',
+    'linear',
+  ].includes(integration.id);
+};
 export const getters = {
-  getAppIntegrations($state) {
-    return $state.records;
+  getIntegrations($state) {
+    return $state.records.filter(item => !isAValidAppIntegration(item));
   },
-  getIntegration:
-    $state =>
-    (integrationId, defaultValue = {}) => {
-      const [integration] = $state.records.filter(
-        record => record.id === integrationId
-      );
-      return integration || defaultValue;
-    },
+  getAppIntegrations($state) {
+    return $state.records.filter(item => isAValidAppIntegration(item));
+  },
+  getIntegration: $state => integrationId => {
+    const [integration] = $state.records.filter(
+      record => record.id === integrationId
+    );
+    return integration || {};
+  },
   getUIFlags($state) {
     return $state.uiFlags;
   },

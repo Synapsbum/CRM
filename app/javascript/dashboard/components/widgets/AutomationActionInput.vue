@@ -1,97 +1,3 @@
-<script>
-import AutomationActionTeamMessageInput from './AutomationActionTeamMessageInput.vue';
-import AutomationActionFileInput from './AutomationFileInput.vue';
-import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vue';
-export default {
-  components: {
-    AutomationActionTeamMessageInput,
-    AutomationActionFileInput,
-    WootMessageEditor,
-  },
-  props: {
-    value: {
-      type: Object,
-      default: () => null,
-    },
-    actionTypes: {
-      type: Array,
-      default: () => [],
-    },
-    dropdownValues: {
-      type: Array,
-      default: () => [],
-    },
-    errorMessage: {
-      type: String,
-      default: '',
-    },
-    showActionInput: {
-      type: Boolean,
-      default: true,
-    },
-    initialFileName: {
-      type: String,
-      default: '',
-    },
-    isMacro: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  computed: {
-    action_name: {
-      get() {
-        if (!this.value) return null;
-        return this.value.action_name;
-      },
-      set(value) {
-        const payload = this.value || {};
-        this.$emit('input', { ...payload, action_name: value });
-      },
-    },
-    action_params: {
-      get() {
-        if (!this.value) return null;
-        return this.value.action_params;
-      },
-      set(value) {
-        const payload = this.value || {};
-        this.$emit('input', { ...payload, action_params: value });
-      },
-    },
-    inputType() {
-      return this.actionTypes.find(action => action.key === this.action_name)
-        .inputType;
-    },
-    actionInputStyles() {
-      return {
-        'has-error': this.errorMessage,
-        'is-a-macro': this.isMacro,
-      };
-    },
-    castMessageVmodel: {
-      get() {
-        if (Array.isArray(this.action_params)) {
-          return this.action_params[0];
-        }
-        return this.action_params;
-      },
-      set(value) {
-        this.action_params = value;
-      },
-    },
-  },
-  methods: {
-    removeAction() {
-      this.$emit('removeAction');
-    },
-    resetAction() {
-      this.$emit('resetAction');
-    },
-  },
-};
-</script>
-
 <template>
   <div class="filter" :class="actionInputStyles">
     <div class="filter-inputs">
@@ -138,7 +44,7 @@ export default {
               track-by="id"
               label="name"
               :placeholder="$t('FORMS.MULTISELECT.SELECT')"
-              multiple
+              :multiple="true"
               selected-label
               :select-label="$t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
               deselect-label=""
@@ -153,16 +59,16 @@ export default {
             v-model="action_params"
             type="email"
             class="answer--text-input"
-            :placeholder="$t('AUTOMATION.ACTION.EMAIL_INPUT_PLACEHOLDER')"
+            placeholder="Enter email"
           />
           <input
             v-else-if="inputType === 'url'"
             v-model="action_params"
             type="url"
             class="answer--text-input"
-            :placeholder="$t('AUTOMATION.ACTION.URL_INPUT_PLACEHOLDER')"
+            placeholder="Enter url"
           />
-          <AutomationActionFileInput
+          <automation-action-file-input
             v-if="inputType === 'attachment'"
             v-model="action_params"
             :initial-file-name="initialFileName"
@@ -177,24 +83,121 @@ export default {
         @click="removeAction"
       />
     </div>
-    <AutomationActionTeamMessageInput
+    <automation-action-team-message-input
       v-if="inputType === 'team_message'"
       v-model="action_params"
       :teams="dropdownValues"
     />
-    <WootMessageEditor
+    <woot-message-editor
       v-if="inputType === 'textarea'"
       v-model="castMessageVmodel"
       rows="4"
-      enable-variables
+      :enable-variables="true"
       :placeholder="$t('AUTOMATION.ACTION.TEAM_MESSAGE_INPUT_PLACEHOLDER')"
       class="action-message"
     />
-    <p v-if="errorMessage" class="filter-error">
-      {{ errorMessage }}
+    <p
+      v-if="v.action_params.$dirty && v.action_params.$error"
+      class="filter-error"
+    >
+      {{ $t('FILTER.EMPTY_VALUE_ERROR') }}
     </p>
   </div>
 </template>
+
+<script>
+import AutomationActionTeamMessageInput from './AutomationActionTeamMessageInput.vue';
+import AutomationActionFileInput from './AutomationFileInput.vue';
+import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vue';
+export default {
+  components: {
+    AutomationActionTeamMessageInput,
+    AutomationActionFileInput,
+    WootMessageEditor,
+  },
+  props: {
+    value: {
+      type: Object,
+      default: () => null,
+    },
+    actionTypes: {
+      type: Array,
+      default: () => [],
+    },
+    dropdownValues: {
+      type: Array,
+      default: () => [],
+    },
+    v: {
+      type: Object,
+      default: () => null,
+    },
+    showActionInput: {
+      type: Boolean,
+      default: true,
+    },
+    initialFileName: {
+      type: String,
+      default: '',
+    },
+    isMacro: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    action_name: {
+      get() {
+        if (!this.value) return null;
+        return this.value.action_name;
+      },
+      set(value) {
+        const payload = this.value || {};
+        this.$emit('input', { ...payload, action_name: value });
+      },
+    },
+    action_params: {
+      get() {
+        if (!this.value) return null;
+        return this.value.action_params;
+      },
+      set(value) {
+        const payload = this.value || {};
+        this.$emit('input', { ...payload, action_params: value });
+      },
+    },
+    inputType() {
+      return this.actionTypes.find(action => action.key === this.action_name)
+        .inputType;
+    },
+    actionInputStyles() {
+      return {
+        'has-error': this.v.action_params.$dirty && this.v.action_params.$error,
+        'is-a-macro': this.isMacro,
+      };
+    },
+    castMessageVmodel: {
+      get() {
+        if (Array.isArray(this.action_params)) {
+          return this.action_params[0];
+        }
+        return this.action_params;
+      },
+      set(value) {
+        this.action_params = value;
+      },
+    },
+  },
+  methods: {
+    removeAction() {
+      this.$emit('removeAction');
+    },
+    resetAction() {
+      this.$emit('resetAction');
+    },
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 .filter {

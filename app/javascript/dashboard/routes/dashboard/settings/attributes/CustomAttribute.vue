@@ -1,109 +1,3 @@
-<script>
-import { mapGetters } from 'vuex';
-import { useAlert } from 'dashboard/composables';
-import EditAttribute from './EditAttribute.vue';
-
-export default {
-  components: {
-    EditAttribute,
-  },
-  data() {
-    return {
-      selectedTabIndex: 0,
-      showEditPopup: false,
-      showDeletePopup: false,
-      selectedAttribute: {},
-    };
-  },
-  computed: {
-    ...mapGetters({
-      uiFlags: 'attributes/getUIFlags',
-    }),
-    attributes() {
-      const attributeModel = this.selectedTabIndex
-        ? 'contact_attribute'
-        : 'conversation_attribute';
-
-      return this.$store.getters['attributes/getAttributesByModel'](
-        attributeModel
-      );
-    },
-    tabs() {
-      return [
-        {
-          key: 0,
-          name: this.$t('ATTRIBUTES_MGMT.TABS.CONVERSATION'),
-        },
-        {
-          key: 1,
-          name: this.$t('ATTRIBUTES_MGMT.TABS.CONTACT'),
-        },
-      ];
-    },
-    deleteConfirmText() {
-      return `${this.$t('ATTRIBUTES_MGMT.DELETE.CONFIRM.YES')} ${
-        this.selectedAttribute.attribute_display_name
-      }`;
-    },
-    deleteRejectText() {
-      return this.$t('ATTRIBUTES_MGMT.DELETE.CONFIRM.NO');
-    },
-    confirmDeleteTitle() {
-      return this.$t('ATTRIBUTES_MGMT.DELETE.CONFIRM.TITLE', {
-        attributeName: this.selectedAttribute.attribute_display_name,
-      });
-    },
-    confirmPlaceHolderText() {
-      return `${this.$t('ATTRIBUTES_MGMT.DELETE.CONFIRM.PLACE_HOLDER', {
-        attributeName: this.selectedAttribute.attribute_display_name,
-      })}`;
-    },
-  },
-  mounted() {
-    this.fetchAttributes(this.selectedTabIndex);
-  },
-  methods: {
-    onClickTabChange(index) {
-      this.selectedTabIndex = index;
-      this.fetchAttributes(index);
-    },
-    fetchAttributes(index) {
-      this.$store.dispatch('attributes/get', index);
-    },
-    async deleteAttributes({ id }) {
-      try {
-        await this.$store.dispatch('attributes/delete', id);
-        useAlert(this.$t('ATTRIBUTES_MGMT.DELETE.API.SUCCESS_MESSAGE'));
-      } catch (error) {
-        const errorMessage =
-          error?.response?.message ||
-          this.$t('ATTRIBUTES_MGMT.DELETE.API.ERROR_MESSAGE');
-        useAlert(errorMessage);
-      }
-    },
-    openEditPopup(response) {
-      this.showEditPopup = true;
-      this.selectedAttribute = response;
-    },
-    hideEditPopup() {
-      this.showEditPopup = false;
-    },
-    confirmDeletion() {
-      this.deleteAttributes(this.selectedAttribute);
-      this.closeDelete();
-    },
-    openDelete(value) {
-      this.showDeletePopup = true;
-      this.selectedAttribute = value;
-    },
-    closeDelete() {
-      this.showDeletePopup = false;
-      this.selectedAttribute = {};
-    },
-  },
-};
-</script>
-
 <template>
   <div class="flex flex-row gap-4 p-8">
     <div class="w-full lg:w-3/5">
@@ -119,7 +13,7 @@ export default {
       <div class="w-full">
         <p
           v-if="!uiFlags.isFetching && !attributes.length"
-          class="flex items-center justify-center mt-12"
+          class="mt-12 flex items-center justify-center"
         >
           {{ $t('ATTRIBUTES_MGMT.LIST.EMPTY_RESULT.404') }}
         </p>
@@ -187,14 +81,14 @@ export default {
         </table>
       </div>
     </div>
-    <div class="hidden w-1/3 lg:block">
+    <div class="hidden lg:block w-1/3">
       <span v-dompurify-html="$t('ATTRIBUTES_MGMT.SIDEBAR_TXT')" />
     </div>
     <woot-modal :show.sync="showEditPopup" :on-close="hideEditPopup">
-      <EditAttribute
+      <edit-attribute
         :selected-attribute="selectedAttribute"
         :is-updating="uiFlags.isUpdating"
-        @onClose="hideEditPopup"
+        @on-close="hideEditPopup"
       />
     </woot-modal>
     <woot-confirm-delete-modal
@@ -206,11 +100,118 @@ export default {
       :reject-text="deleteRejectText"
       :confirm-value="selectedAttribute.attribute_display_name"
       :confirm-place-holder-text="confirmPlaceHolderText"
-      @onConfirm="confirmDeletion"
-      @onClose="closeDelete"
+      @on-confirm="confirmDeletion"
+      @on-close="closeDelete"
     />
   </div>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+import alertMixin from 'shared/mixins/alertMixin';
+import EditAttribute from './EditAttribute.vue';
+
+export default {
+  components: {
+    EditAttribute,
+  },
+  mixins: [alertMixin],
+  data() {
+    return {
+      selectedTabIndex: 0,
+      showEditPopup: false,
+      showDeletePopup: false,
+      selectedAttribute: {},
+    };
+  },
+  computed: {
+    ...mapGetters({
+      uiFlags: 'attributes/getUIFlags',
+    }),
+    attributes() {
+      const attributeModel = this.selectedTabIndex
+        ? 'contact_attribute'
+        : 'conversation_attribute';
+
+      return this.$store.getters['attributes/getAttributesByModel'](
+        attributeModel
+      );
+    },
+    tabs() {
+      return [
+        {
+          key: 0,
+          name: this.$t('ATTRIBUTES_MGMT.TABS.CONVERSATION'),
+        },
+        {
+          key: 1,
+          name: this.$t('ATTRIBUTES_MGMT.TABS.CONTACT'),
+        },
+      ];
+    },
+    deleteConfirmText() {
+      return `${this.$t('ATTRIBUTES_MGMT.DELETE.CONFIRM.YES')} ${
+        this.selectedAttribute.attribute_display_name
+      }`;
+    },
+    deleteRejectText() {
+      return this.$t('ATTRIBUTES_MGMT.DELETE.CONFIRM.NO');
+    },
+    confirmDeleteTitle() {
+      return this.$t('ATTRIBUTES_MGMT.DELETE.CONFIRM.TITLE', {
+        attributeName: this.selectedAttribute.attribute_display_name,
+      });
+    },
+    confirmPlaceHolderText() {
+      return `${this.$t('ATTRIBUTES_MGMT.DELETE.CONFIRM.PLACE_HOLDER', {
+        attributeName: this.selectedAttribute.attribute_display_name,
+      })}`;
+    },
+  },
+  mounted() {
+    this.fetchAttributes(this.selectedTabIndex);
+  },
+  methods: {
+    onClickTabChange(index) {
+      this.selectedTabIndex = index;
+      this.fetchAttributes(index);
+    },
+    fetchAttributes(index) {
+      this.$store.dispatch('attributes/get', index);
+    },
+    async deleteAttributes({ id }) {
+      try {
+        await this.$store.dispatch('attributes/delete', id);
+        this.showAlert(this.$t('ATTRIBUTES_MGMT.DELETE.API.SUCCESS_MESSAGE'));
+      } catch (error) {
+        const errorMessage =
+          error?.response?.message ||
+          this.$t('ATTRIBUTES_MGMT.DELETE.API.ERROR_MESSAGE');
+        this.showAlert(errorMessage);
+      }
+    },
+    openEditPopup(response) {
+      this.showEditPopup = true;
+      this.selectedAttribute = response;
+    },
+    hideEditPopup() {
+      this.showEditPopup = false;
+    },
+    confirmDeletion() {
+      this.deleteAttributes(this.selectedAttribute);
+      this.closeDelete();
+    },
+    openDelete(value) {
+      this.showDeletePopup = true;
+      this.selectedAttribute = value;
+    },
+    closeDelete() {
+      this.showDeletePopup = false;
+      this.selectedAttribute = {};
+    },
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 .attribute-key {

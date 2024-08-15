@@ -57,10 +57,6 @@ class Channel::Email < ApplicationRecord
     provider == 'microsoft'
   end
 
-  def google?
-    provider == 'google'
-  end
-
   private
 
   def ensure_forward_to_email

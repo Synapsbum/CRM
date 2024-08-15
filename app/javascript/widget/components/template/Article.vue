@@ -1,22 +1,3 @@
-<script>
-import messageFormatterMixin from 'shared/mixins/messageFormatterMixin';
-import FluentIcon from 'shared/components/FluentIcon/Index.vue';
-import darkModeMixin from 'widget/mixins/darkModeMixin.js';
-
-export default {
-  components: {
-    FluentIcon,
-  },
-  mixins: [messageFormatterMixin, darkModeMixin],
-  props: {
-    items: {
-      type: Array,
-      default: () => [],
-    },
-  },
-};
-</script>
-
 <template>
   <div
     v-if="!!items.length"
@@ -26,7 +7,7 @@ export default {
     <div v-for="item in items" :key="item.link" class="article-item">
       <a :href="item.link" target="_blank" rel="noopener noreferrer nofollow">
         <span class="title flex items-center text-black-900 font-medium">
-          <FluentIcon
+          <fluent-icon
             icon="link"
             class="mr-1"
             :class="$dm('text-black-900', 'dark:text-slate-50')"
@@ -45,6 +26,25 @@ export default {
     </div>
   </div>
 </template>
+
+<script>
+import messageFormatterMixin from 'shared/mixins/messageFormatterMixin';
+import FluentIcon from 'shared/components/FluentIcon/Index.vue';
+import darkModeMixin from 'widget/mixins/darkModeMixin.js';
+
+export default {
+  components: {
+    FluentIcon,
+  },
+  mixins: [messageFormatterMixin, darkModeMixin],
+  props: {
+    items: {
+      type: Array,
+      default: () => [],
+    },
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 @import '~widget/assets/scss/variables.scss';

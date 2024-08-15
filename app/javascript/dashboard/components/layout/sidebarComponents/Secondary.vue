@@ -1,11 +1,34 @@
+<template>
+  <div
+    v-if="hasSecondaryMenu"
+    class="h-full overflow-auto w-48 flex flex-col bg-white dark:bg-slate-900 border-r dark:border-slate-800/50 rtl:border-r-0 rtl:border-l border-slate-50 text-sm px-2 pb-8"
+  >
+    <account-context @toggle-accounts="toggleAccountModal" />
+    <transition-group
+      name="menu-list"
+      tag="ul"
+      class="pt-2 list-none ml-0 mb-0"
+    >
+      <secondary-nav-item
+        v-for="menuItem in accessibleMenuItems"
+        :key="menuItem.toState"
+        :menu-item="menuItem"
+      />
+      <secondary-nav-item
+        v-for="menuItem in additionalSecondaryMenuItems[menuConfig.parentNav]"
+        :key="menuItem.key"
+        :menu-item="menuItem"
+        @add-label="showAddLabelPopup"
+      />
+    </transition-group>
+  </div>
+</template>
 <script>
 import { frontendURL } from '../../../helper/URLHelper';
 import SecondaryNavItem from './SecondaryNavItem.vue';
 import AccountContext from './AccountContext.vue';
 import { mapGetters } from 'vuex';
 import { FEATURE_FLAGS } from '../../../featureFlags';
-import { hasPermissions } from '../../../helper/permissionsHelper';
-import { routesWithPermissions } from '../../../routes';
 
 export default {
   components: {
@@ -37,9 +60,9 @@ export default {
       type: Object,
       default: () => {},
     },
-    currentUser: {
-      type: Object,
-      default: () => {},
+    currentRole: {
+      type: String,
+      default: '',
     },
     isOnChatwootCloud: {
       type: Boolean,
@@ -57,16 +80,16 @@ export default {
       return this.customViews.filter(view => view.filter_type === 'contact');
     },
     accessibleMenuItems() {
-      const menuItemsFilteredByPermissions = this.menuConfig.menuItems.filter(
-        menuItem => {
-          const { permissions: userPermissions = [] } = this.currentUser;
-          return hasPermissions(
-            routesWithPermissions[menuItem.toStateName],
-            userPermissions
-          );
-        }
+      if (!this.currentRole) {
+        return [];
+      }
+      const menuItemsFilteredByRole = this.menuConfig.menuItems.filter(
+        menuItem =>
+          window.roleWiseRoutes[this.currentRole].indexOf(
+            menuItem.toStateName
+          ) > -1
       );
-      return menuItemsFilteredByPermissions.filter(item => {
+      return menuItemsFilteredByRole.filter(item => {
         if (item.showOnlyOnCloud) {
           return this.isOnChatwootCloud;
         }
@@ -223,10 +246,10 @@ export default {
   },
   methods: {
     showAddLabelPopup() {
-      this.$emit('addLabel');
+      this.$emit('add-label');
     },
     toggleAccountModal() {
-      this.$emit('toggleAccounts');
+      this.$emit('toggle-accounts');
     },
     showNewLink(featureFlag) {
       return this.isFeatureEnabledonAccount(this.accountId, featureFlag);
@@ -234,29 +257,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div
-    v-if="hasSecondaryMenu"
-    class="flex flex-col w-48 h-full px-2 pb-8 overflow-auto text-sm bg-white border-r dark:bg-slate-900 dark:border-slate-800/50 rtl:border-r-0 rtl:border-l border-slate-50"
-  >
-    <AccountContext @toggleAccounts="toggleAccountModal" />
-    <transition-group
-      name="menu-list"
-      tag="ul"
-      class="pt-2 mb-0 ml-0 list-none"
-    >
-      <SecondaryNavItem
-        v-for="menuItem in accessibleMenuItems"
-        :key="menuItem.toState"
-        :menu-item="menuItem"
-      />
-      <SecondaryNavItem
-        v-for="menuItem in additionalSecondaryMenuItems[menuConfig.parentNav]"
-        :key="menuItem.key"
-        :menu-item="menuItem"
-        @addLabel="showAddLabelPopup"
-      />
-    </transition-group>
-  </div>
-</template>

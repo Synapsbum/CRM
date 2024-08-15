@@ -8,18 +8,14 @@ export default {
     {
       path: frontendURL('accounts/:accountId/profile'),
       name: 'profile_settings',
-      meta: {
-        permissions: ['administrator', 'agent'],
-      },
+      roles: ['administrator', 'agent'],
       component: SettingsContent,
       children: [
         {
           path: 'settings',
           name: 'profile_settings_index',
           component: Index,
-          meta: {
-            permissions: ['administrator', 'agent'],
-          },
+          roles: ['administrator', 'agent'],
         },
       ],
     },

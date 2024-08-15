@@ -1,12 +1,41 @@
+<template>
+  <section
+    class="contacts-table-wrap bg-white dark:bg-slate-900 flex-1 h-full overflow-hidden -mt-1"
+  >
+    <ve-table
+      :fixed-header="true"
+      max-height="calc(100vh - 7.125rem)"
+      scroll-width="187rem"
+      :columns="columns"
+      :table-data="tableData"
+      :border-around="false"
+      :sort-option="sortOption"
+    />
+
+    <empty-state
+      v-if="showSearchEmptyState"
+      :title="$t('CONTACTS_PAGE.LIST.404')"
+    />
+    <empty-state
+      v-else-if="!isLoading && !contacts.length"
+      :title="$t('CONTACTS_PAGE.LIST.NO_CONTACTS')"
+    />
+    <div v-if="isLoading" class="items-center flex text-base justify-center">
+      <spinner />
+      <span>{{ $t('CONTACTS_PAGE.LIST.LOADING_MESSAGE') }}</span>
+    </div>
+  </section>
+</template>
+
 <script>
-import { mapGetters } from 'vuex';
 import { VeTable } from 'vue-easytable';
 import { getCountryFlag } from 'dashboard/helper/flag';
 
 import Spinner from 'shared/components/Spinner.vue';
 import Thumbnail from 'dashboard/components/widgets/Thumbnail.vue';
 import EmptyState from 'dashboard/components/widgets/EmptyState.vue';
-import { dynamicTime } from 'shared/helpers/timeHelper';
+import timeMixin from 'dashboard/mixins/time';
+import rtlMixin from 'shared/mixins/rtlMixin';
 import FluentIcon from 'shared/components/FluentIcon/DashboardIcon.vue';
 
 export default {
@@ -15,6 +44,7 @@ export default {
     Spinner,
     VeTable,
   },
+  mixins: [timeMixin, rtlMixin],
   props: {
     contacts: {
       type: Array,
@@ -32,6 +62,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    activeContactId: {
+      type: [String, Number],
+      default: '',
+    },
     sortParam: {
       type: String,
       default: 'last_activity_at',
@@ -46,14 +80,11 @@ export default {
       sortConfig: {},
       sortOption: {
         sortAlways: true,
-        sortChange: params => this.$emit('onSortChange', params),
+        sortChange: params => this.$emit('on-sort-change', params),
       },
     };
   },
   computed: {
-    ...mapGetters({
-      isRTL: 'accounts/isRTL',
-    }),
     tableData() {
       if (this.isLoading) {
         return [];
@@ -74,9 +105,9 @@ export default {
           countryCode: additional.country_code,
           conversationsCount: item.conversations_count || '---',
           last_activity_at: lastActivityAt
-            ? dynamicTime(lastActivityAt)
+            ? this.dynamicTime(lastActivityAt)
             : '---',
-          created_at: createdAt ? dynamicTime(createdAt) : '---',
+          created_at: createdAt ? this.dynamicTime(createdAt) : '---',
         };
       });
     },
@@ -87,7 +118,7 @@ export default {
           key: 'name',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.NAME'),
           fixed: 'left',
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
           sortBy: this.sortConfig.name || '',
           width: 300,
           renderBodyCell: ({ row }) => (
@@ -103,12 +134,12 @@ export default {
                   status={row.availability_status}
                 />
                 <div class="user-block">
-                  <h6 class="overflow-hidden text-base whitespace-nowrap text-ellipsis">
+                  <h6 class="text-base overflow-hidden whitespace-nowrap text-ellipsis">
                     <router-link
                       to={`/app/accounts/${this.$route.params.accountId}/contacts/${row.id}`}
                       class="user-name"
                     >
-                      {row.name}
+                      {{ obfuscatePhoneNumber(row.name) }}
                     </router-link>
                   </h6>
                   <button class="button clear small link view-details--button">
@@ -123,7 +154,7 @@ export default {
           field: 'email',
           key: 'email',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.EMAIL_ADDRESS'),
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
           sortBy: this.sortConfig.email || '',
           width: 240,
           renderBodyCell: ({ row }) => {
@@ -147,27 +178,39 @@ export default {
           key: 'phone_number',
           sortBy: this.sortConfig.phone_number || '',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.PHONE_NUMBER'),
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
+          renderBodyCell: ({ row }) => {
+            if (row.phone_number) {
+              const firstFiveDigits = row.phone_number.slice(0, 5);
+              const obscuredPart = row.phone_number.slice(5).replace(/\d/g, '*');
+              return (
+                <a>
+                  {` ${firstFiveDigits}${obscuredPart}`}
+                </a>
+              );
+            }
+            return '---';
+          },
         },
         {
           field: 'company',
           key: 'company',
           sortBy: this.sortConfig.company_name || '',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.COMPANY'),
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
         },
         {
           field: 'city',
           key: 'city',
           sortBy: this.sortConfig.city || '',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.CITY'),
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
         },
         {
           field: 'country',
           key: 'country',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.COUNTRY'),
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
           sortBy: this.sortConfig.country || '',
           renderBodyCell: ({ row }) => {
             if (row.country) {
@@ -184,7 +227,7 @@ export default {
           field: 'profiles',
           key: 'profiles',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.SOCIAL_PROFILES'),
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
           renderBodyCell: ({ row }) => {
             const { profiles } = row;
 
@@ -215,14 +258,14 @@ export default {
           key: 'last_activity_at',
           sortBy: this.sortConfig.last_activity_at || '',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.LAST_ACTIVITY'),
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
         },
         {
           field: 'created_at',
           key: 'created_at',
           sortBy: this.sortConfig.created_at || '',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.CREATED_AT'),
-          align: this.isRTL ? 'right' : 'left',
+          align: this.isRTLView ? 'right' : 'left',
         },
       ];
     },
@@ -239,41 +282,25 @@ export default {
     this.setSortConfig();
   },
   methods: {
+    obfuscatePhoneNumber(phoneNumber) {
+      // Check if the phone number is not null or undefined
+      if (phoneNumber) {
+        // Get the first 5 characters of the phone number
+        const firstFiveDigits = phoneNumber.slice(0, 5);
+        // Replace the rest of the characters with '*'
+        const obscuredPart = phoneNumber.slice(5).replace(/\d/g, '*');
+        // Return the obfuscated phone number
+        return `${firstFiveDigits}${obscuredPart}`;
+      }
+      // Return empty string if phone number is null or undefined
+      return phoneNumber;
+    },
     setSortConfig() {
       this.sortConfig = { [this.sortParam]: this.sortOrder };
     },
   },
 };
 </script>
-
-<template>
-  <section
-    class="flex-1 h-full -mt-1 overflow-hidden bg-white contacts-table-wrap dark:bg-slate-900"
-  >
-    <VeTable
-      fixed-header
-      max-height="calc(100vh - 7.125rem)"
-      scroll-width="187rem"
-      :columns="columns"
-      :table-data="tableData"
-      :border-around="false"
-      :sort-option="sortOption"
-    />
-
-    <EmptyState
-      v-if="showSearchEmptyState"
-      :title="$t('CONTACTS_PAGE.LIST.404')"
-    />
-    <EmptyState
-      v-else-if="!isLoading && !contacts.length"
-      :title="$t('CONTACTS_PAGE.LIST.NO_CONTACTS')"
-    />
-    <div v-if="isLoading" class="flex items-center justify-center text-base">
-      <Spinner />
-      <span>{{ $t('CONTACTS_PAGE.LIST.LOADING_MESSAGE') }}</span>
-    </div>
-  </section>
-</template>
 
 <style lang="scss" scoped>
 .contacts-table-wrap::v-deep {

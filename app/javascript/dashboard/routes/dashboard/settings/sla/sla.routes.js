@@ -13,17 +13,13 @@ export default {
         {
           path: '',
           name: 'sla_wrapper',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           redirect: 'list',
         },
         {
           path: 'list',
           name: 'sla_list',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: Index,
         },
       ],

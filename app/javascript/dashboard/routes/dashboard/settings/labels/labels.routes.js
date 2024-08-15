@@ -1,28 +1,29 @@
 import { frontendURL } from '../../../../helper/URLHelper';
 
-const SettingsWrapper = () => import('../SettingsWrapper.vue');
+const SettingsContent = () => import('../Wrapper.vue');
 const Index = () => import('./Index.vue');
 
 export default {
   routes: [
     {
       path: frontendURL('accounts/:accountId/settings/labels'),
-      component: SettingsWrapper,
+      component: SettingsContent,
+      props: {
+        headerTitle: 'LABEL_MGMT.HEADER',
+        icon: 'tag',
+        showNewButton: false,
+      },
       children: [
         {
           path: '',
           name: 'labels_wrapper',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           redirect: 'list',
         },
         {
           path: 'list',
           name: 'labels_list',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: Index,
         },
       ],

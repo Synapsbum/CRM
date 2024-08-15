@@ -1,29 +1,3 @@
-<script setup>
-import { inject } from 'vue';
-const props = defineProps({
-  identifier: {
-    type: String,
-    required: true,
-  },
-  issueUrl: {
-    type: String,
-    required: true,
-  },
-});
-
-const emit = defineEmits(['unlinkIssue']);
-
-const isUnlinking = inject('isUnlinking');
-
-const unlinkIssue = () => {
-  emit('unlinkIssue');
-};
-
-const openIssue = () => {
-  window.open(props.issueUrl, '_blank');
-};
-</script>
-
 <template>
   <div class="flex flex-row justify-between">
     <div
@@ -42,16 +16,9 @@ const openIssue = () => {
         variant="clear"
         color-scheme="secondary"
         class="h-[24px]"
-        :is-loading="isUnlinking"
         @click="unlinkIssue"
       >
-        <fluent-icon
-          v-if="!isUnlinking"
-          icon="unlink"
-          size="12"
-          type="outline"
-          icon-lib="lucide"
-        />
+        <fluent-icon icon="unlink" size="12" type="outline" icon-lib="lucide" />
       </woot-button>
       <woot-button
         variant="clear"
@@ -64,3 +31,26 @@ const openIssue = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+const props = defineProps({
+  identifier: {
+    type: String,
+    required: true,
+  },
+  issueUrl: {
+    type: String,
+    required: true,
+  },
+});
+
+const emit = defineEmits(['unlink-issue']);
+
+const unlinkIssue = () => {
+  emit('unlink-issue');
+};
+
+const openIssue = () => {
+  window.open(props.issueUrl, '_blank');
+};
+</script>

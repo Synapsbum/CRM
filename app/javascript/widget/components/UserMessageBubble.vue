@@ -1,3 +1,11 @@
+<template>
+  <div
+    v-dompurify-html="formatMessage(message, false)"
+    class="chat-bubble user"
+    :style="{ background: widgetColor, color: textColor }"
+  />
+</template>
+
 <script>
 import messageFormatterMixin from 'shared/mixins/messageFormatterMixin';
 import { getContrastingTextColor } from '@chatwoot/utils';
@@ -7,6 +15,10 @@ export default {
   mixins: [messageFormatterMixin],
   props: {
     message: {
+      type: String,
+      default: '',
+    },
+    status: {
       type: String,
       default: '',
     },
@@ -22,14 +34,6 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div
-    v-dompurify-html="formatMessage(message, false)"
-    class="chat-bubble user"
-    :style="{ background: widgetColor, color: textColor }"
-  />
-</template>
 
 <style lang="scss" scoped>
 @import '~widget/assets/scss/variables.scss';

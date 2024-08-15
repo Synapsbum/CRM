@@ -1,3 +1,18 @@
+<template>
+  <transition-group
+    name="toast-fade"
+    tag="div"
+    class="left-0 my-0 mx-auto max-w-[25rem] overflow-hidden absolute right-0 text-center top-4 z-[9999]"
+  >
+    <woot-snackbar
+      v-for="snackMessage in snackMessages"
+      :key="snackMessage.key"
+      :message="snackMessage.message"
+      :action="snackMessage.action"
+    />
+  </transition-group>
+</template>
+
 <script>
 import WootSnackbar from './Snackbar.vue';
 
@@ -19,13 +34,13 @@ export default {
   },
 
   mounted() {
-    this.$emitter.on('newToastMessage', this.onNewToastMessage);
+    bus.$on('newToastMessage', this.onNewToastMessage);
   },
   beforeDestroy() {
-    this.$emitter.off('newToastMessage', this.onNewToastMessage);
+    bus.$off('newToastMessage', this.onNewToastMessage);
   },
   methods: {
-    onNewToastMessage({ message, action }) {
+    onNewToastMessage(message, action) {
       this.snackMessages.push({
         key: new Date().getTime(),
         message,
@@ -38,18 +53,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <transition-group
-    name="toast-fade"
-    tag="div"
-    class="left-0 my-0 mx-auto max-w-[25rem] overflow-hidden absolute right-0 text-center top-4 z-[9999]"
-  >
-    <WootSnackbar
-      v-for="snackMessage in snackMessages"
-      :key="snackMessage.key"
-      :message="snackMessage.message"
-      :action="snackMessage.action"
-    />
-  </transition-group>
-</template>

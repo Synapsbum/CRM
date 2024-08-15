@@ -12,17 +12,13 @@ export const routes = [
         path: '',
         name: 'inbox_view',
         component: InboxEmptyStateView,
-        meta: {
-          permissions: ['administrator', 'agent'],
-        },
+        roles: ['administrator', 'agent'],
       },
       {
         path: ':notification_id',
         name: 'inbox_view_conversation',
         component: InboxDetailView,
-        meta: {
-          permissions: ['administrator', 'agent'],
-        },
+        roles: ['administrator', 'agent'],
       },
     ],
   },

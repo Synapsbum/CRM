@@ -1,3 +1,49 @@
+<template>
+  <div ref="editorRoot" class="relative editor-root">
+    <tag-agents
+      v-if="showUserMentions && isPrivate"
+      :search-key="mentionSearchKey"
+      @click="insertMentionNode"
+    />
+    <canned-response
+      v-if="shouldShowCannedResponses"
+      :search-key="cannedSearchTerm"
+      @click="insertCannedResponse"
+    />
+    <variable-list
+      v-if="shouldShowVariables"
+      :search-key="variableSearchTerm"
+      @click="insertVariable"
+    />
+    <input
+      ref="imageUpload"
+      type="file"
+      accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+      hidden
+      @change="onFileChange"
+    />
+    <div ref="editor" />
+    <div
+      v-show="isImageNodeSelected && showImageResizeToolbar"
+      class="absolute shadow-md rounded-[4px] flex gap-1 py-1 px-1 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-50"
+      :style="{
+        top: toolbarPosition.top,
+        left: toolbarPosition.left,
+      }"
+    >
+      <button
+        v-for="size in sizes"
+        :key="size.name"
+        class="text-xs font-medium rounded-[4px] border border-solid border-slate-200 dark:border-slate-600 px-1.5 py-0.5 hover:bg-slate-100 dark:hover:bg-slate-800"
+        @click="setURLWithQueryAndImageSize(size)"
+      >
+        {{ size.name }}
+      </button>
+    </div>
+    <slot name="footer" />
+  </div>
+</template>
+
 <script>
 import {
   messageSchema,
@@ -34,7 +80,8 @@ import {
   hasPressedCommandAndEnter,
 } from 'shared/helpers/KeyboardHelpers';
 import keyboardEventListenerMixins from 'shared/mixins/keyboardEventListenerMixins';
-import { useUISettings } from 'dashboard/composables/useUISettings';
+import uiSettingsMixin from 'dashboard/mixins/uiSettings';
+import { isEditorHotKeyEnabled } from 'dashboard/mixins/uiSettings';
 import {
   replaceVariablesInMessage,
   createTypingIndicator,
@@ -42,7 +89,7 @@ import {
 import { CONVERSATION_EVENTS } from '../../../helper/AnalyticsHelper/events';
 import { checkFileSizeLimit } from 'shared/helpers/FileHelper';
 import { uploadFile } from 'dashboard/helper/uploadHelper';
-import { useAlert } from 'dashboard/composables';
+import alertMixin from 'shared/mixins/alertMixin';
 import {
   MESSAGE_EDITOR_MENU_OPTIONS,
   MESSAGE_EDITOR_IMAGE_RESIZES,
@@ -72,7 +119,7 @@ const createState = (
 export default {
   name: 'WootMessageEditor',
   components: { TagAgents, CannedResponse, VariableList },
-  mixins: [keyboardEventListenerMixins],
+  mixins: [keyboardEventListenerMixins, uiSettingsMixin, alertMixin],
   props: {
     value: { type: String, default: '' },
     editorId: { type: String, default: '' },
@@ -92,27 +139,14 @@ export default {
     channelType: { type: String, default: '' },
     showImageResizeToolbar: { type: Boolean, default: false }, // A kill switch to show or hide the image toolbar
   },
-  setup() {
-    const {
-      uiSettings,
-      isEditorHotKeyEnabled,
-      fetchSignatureFlagFromUISettings,
-    } = useUISettings();
-
-    return {
-      uiSettings,
-      isEditorHotKeyEnabled,
-      fetchSignatureFlagFromUISettings,
-    };
-  },
   data() {
     return {
       typingIndicator: createTypingIndicator(
         () => {
-          this.$emit('typingOn');
+          this.$emit('typing-on');
         },
         () => {
-          this.$emit('typingOff');
+          this.$emit('typing-off');
         },
         TYPING_INDICATOR_IDLE_TIME
       ),
@@ -244,7 +278,7 @@ export default {
       // this is considered the source of truth, we watch this property
       // on change, we toggle the signature in the editor
       if (this.allowSignature && !this.isPrivate && this.channelType) {
-        return this.fetchSignatureFlagFromUISettings(this.channelType);
+        return this.fetchSignatureFlagFromUiSettings(this.channelType);
       }
 
       return false;
@@ -252,13 +286,13 @@ export default {
   },
   watch: {
     showUserMentions(updatedValue) {
-      this.$emit('toggleUserMention', this.isPrivate && updatedValue);
+      this.$emit('toggle-user-mention', this.isPrivate && updatedValue);
     },
     showCannedMenu(updatedValue) {
-      this.$emit('toggleCannedMenu', !this.isPrivate && updatedValue);
+      this.$emit('toggle-canned-menu', !this.isPrivate && updatedValue);
     },
     showVariables(updatedValue) {
-      this.$emit('toggleVariablesMenu', !this.isPrivate && updatedValue);
+      this.$emit('toggle-variables-menu', !this.isPrivate && updatedValue);
     },
     value(newVal = '') {
       if (newVal !== this.contentFromEditor) {
@@ -287,7 +321,7 @@ export default {
           this.state = this.editorView.state.apply(tr);
           this.editorView.updateState(this.state);
           this.emitOnChange();
-          this.$emit('clearSelection');
+          this.$emit('clear-selection');
         }
       }
       return null;
@@ -318,16 +352,10 @@ export default {
     // Components using this
     // 1. SearchPopover.vue
 
-    this.$emitter.on(
-      BUS_EVENTS.INSERT_INTO_RICH_EDITOR,
-      this.insertContentIntoEditor
-    );
+    bus.$on(BUS_EVENTS.INSERT_INTO_RICH_EDITOR, this.insertContentIntoEditor);
   },
   beforeDestroy() {
-    this.$emitter.off(
-      BUS_EVENTS.INSERT_INTO_RICH_EDITOR,
-      this.insertContentIntoEditor
-    );
+    bus.$off(BUS_EVENTS.INSERT_INTO_RICH_EDITOR, this.insertContentIntoEditor);
   },
   methods: {
     reloadState(content = this.value) {
@@ -487,10 +515,10 @@ export default {
       }
     },
     isEnterToSendEnabled() {
-      return this.isEditorHotKeyEnabled('enter');
+      return isEditorHotKeyEnabled(this.uiSettings, 'enter');
     },
     isCmdPlusEnterToSendEnabled() {
-      return this.isEditorHotKeyEnabled('cmd_enter');
+      return isEditorHotKeyEnabled(this.uiSettings, 'cmd_enter');
     },
     getKeyboardEvents() {
       return {
@@ -577,7 +605,7 @@ export default {
       if (checkFileSizeLimit(file, MAXIMUM_FILE_UPLOAD_SIZE)) {
         this.uploadImageToStorage(file);
       } else {
-        useAlert(
+        this.showAlert(
           this.$t(
             'PROFILE_SETTINGS.FORM.MESSAGE_SIGNATURE_SECTION.IMAGE_UPLOAD_SIZE_ERROR',
             {
@@ -595,13 +623,13 @@ export default {
         if (fileUrl) {
           this.onImageInsertInEditor(fileUrl);
         }
-        useAlert(
+        this.showAlert(
           this.$t(
             'PROFILE_SETTINGS.FORM.MESSAGE_SIGNATURE_SECTION.IMAGE_UPLOAD_SUCCESS'
           )
         );
       } catch (error) {
-        useAlert(
+        this.showAlert(
           this.$t(
             'PROFILE_SETTINGS.FORM.MESSAGE_SIGNATURE_SECTION.IMAGE_UPLOAD_ERROR'
           )
@@ -681,52 +709,6 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div ref="editorRoot" class="relative editor-root">
-    <TagAgents
-      v-if="showUserMentions && isPrivate"
-      :search-key="mentionSearchKey"
-      @click="insertMentionNode"
-    />
-    <CannedResponse
-      v-if="shouldShowCannedResponses"
-      :search-key="cannedSearchTerm"
-      @click="insertCannedResponse"
-    />
-    <VariableList
-      v-if="shouldShowVariables"
-      :search-key="variableSearchTerm"
-      @click="insertVariable"
-    />
-    <input
-      ref="imageUpload"
-      type="file"
-      accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
-      hidden
-      @change="onFileChange"
-    />
-    <div ref="editor" />
-    <div
-      v-show="isImageNodeSelected && showImageResizeToolbar"
-      class="absolute shadow-md rounded-[4px] flex gap-1 py-1 px-1 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-50"
-      :style="{
-        top: toolbarPosition.top,
-        left: toolbarPosition.left,
-      }"
-    >
-      <button
-        v-for="size in sizes"
-        :key="size.name"
-        class="text-xs font-medium rounded-[4px] border border-solid border-slate-200 dark:border-slate-600 px-1.5 py-0.5 hover:bg-slate-100 dark:hover:bg-slate-800"
-        @click="setURLWithQueryAndImageSize(size)"
-      >
-        {{ size.name }}
-      </button>
-    </div>
-    <slot name="footer" />
-  </div>
-</template>
 
 <style lang="scss">
 @import '~@chatwoot/prosemirror-schema/src/styles/base.scss';

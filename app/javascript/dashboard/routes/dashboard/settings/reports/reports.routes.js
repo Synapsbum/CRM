@@ -29,9 +29,7 @@ export default {
         {
           path: 'overview',
           name: 'account_overview_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: LiveReports,
         },
       ],
@@ -48,9 +46,7 @@ export default {
         {
           path: 'conversation',
           name: 'conversation_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: Index,
         },
       ],
@@ -67,9 +63,7 @@ export default {
         {
           path: 'csat',
           name: 'csat_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: CsatResponses,
         },
       ],
@@ -86,9 +80,7 @@ export default {
         {
           path: 'bot',
           name: 'bot_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: BotReports,
         },
       ],
@@ -105,9 +97,7 @@ export default {
         {
           path: 'agent',
           name: 'agent_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: AgentReports,
         },
       ],
@@ -124,9 +114,7 @@ export default {
         {
           path: 'label',
           name: 'label_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: LabelReports,
         },
       ],
@@ -143,9 +131,7 @@ export default {
         {
           path: 'inboxes',
           name: 'inbox_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: InboxReports,
         },
       ],
@@ -161,9 +147,7 @@ export default {
         {
           path: 'teams',
           name: 'team_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: TeamReports,
         },
       ],
@@ -180,9 +164,7 @@ export default {
         {
           path: 'sla',
           name: 'sla_reports',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           component: SLAReports,
         },
       ],

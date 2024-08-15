@@ -34,14 +34,10 @@ class Integrations::App
     end
   end
 
-  def active?(account)
+  def active?
     case params[:id]
     when 'slack'
       ENV['SLACK_CLIENT_SECRET'].present?
-    when 'linear'
-      account.feature_enabled?('linear_integration')
-    when 'captain'
-      account.feature_enabled?('captain_integration') && ENV['CAPTAIN_API_URL'].present?
     else
       true
     end
@@ -49,12 +45,10 @@ class Integrations::App
 
   def enabled?(account)
     case params[:id]
-    when 'webhook'
-      account.webhooks.exists?
-    when 'dashboard_apps'
-      account.dashboard_apps.exists?
-    else
+    when 'slack'
       account.hooks.exists?(app_id: id)
+    else
+      true
     end
   end
 

@@ -1,11 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { debounce } from '@chatwoot/utils';
 import { picoSearch } from '@scmmishra/pico-search';
 import ListItemButton from './DropdownListItemButton.vue';
 import DropdownSearch from './DropdownSearch.vue';
 import DropdownEmptyState from './DropdownEmptyState.vue';
-import DropdownLoadingState from './DropdownLoadingState.vue';
 
 const props = defineProps({
   listItems: {
@@ -28,24 +26,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isLoading: {
-    type: Boolean,
-    default: false,
-  },
-  loadingPlaceholder: {
-    type: String,
-    default: '',
-  },
 });
 
-const emit = defineEmits(['onSearch']);
+const emits = defineEmits(['on-search']);
 
 const searchTerm = ref('');
 
-const onSearch = debounce(value => {
+const onSearch = value => {
   searchTerm.value = value;
-  emit('onSearch', value);
-}, 300);
+  emits('on-search', value);
+};
 
 const filteredListItems = computed(() => {
   if (!searchTerm.value) return props.listItems;
@@ -60,25 +50,14 @@ const isFilterActive = id => {
   if (!props.activeFilterId) return false;
   return id === props.activeFilterId;
 };
-
-const shouldShowLoadingState = computed(() => {
-  return (
-    props.isLoading && isDropdownListEmpty.value && props.loadingPlaceholder
-  );
-});
-
-const shouldShowEmptyState = computed(() => {
-  return !props.isLoading && isDropdownListEmpty.value;
-});
 </script>
-
 <template>
   <div
     class="absolute z-20 w-40 bg-white border shadow dark:bg-slate-800 rounded-xl border-slate-50 dark:border-slate-700/50 max-h-[400px]"
     @click.stop
   >
     <slot name="search">
-      <DropdownSearch
+      <dropdown-search
         v-if="enableSearch"
         :input-value="searchTerm"
         :input-placeholder="inputPlaceholder"
@@ -88,21 +67,15 @@ const shouldShowEmptyState = computed(() => {
       />
     </slot>
     <slot name="listItem">
-      <DropdownLoadingState
-        v-if="shouldShowLoadingState"
-        :message="loadingPlaceholder"
-      />
-      <DropdownEmptyState
-        v-else-if="shouldShowEmptyState"
+      <dropdown-empty-state
+        v-if="isDropdownListEmpty"
         :message="$t('REPORT.FILTER_ACTIONS.EMPTY_LIST')"
       />
-      <ListItemButton
+      <list-item-button
         v-for="item in filteredListItems"
         :key="item.id"
         :is-active="isFilterActive(item.id)"
         :button-text="item.name"
-        :icon="item.icon"
-        :icon-color="item.iconColor"
         @click="$emit('click', item)"
       />
     </slot>

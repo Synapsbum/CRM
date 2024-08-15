@@ -99,8 +99,8 @@
     "EVENTS": {
       "TITLE": "SLA Misses",
       "FRT": "Primera respuesta",
-      "NRT": "Tiempo de respuesta siguiente",
-      "RT": "Tiempo de resolución",
+      "NRT": "Next response time",
+      "RT": "Resolution time",
       "SHOW_MORE": "{count} more",
       "HIDE": "Hide {count} rows"
     }

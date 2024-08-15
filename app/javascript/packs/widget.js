@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import Vuelidate from 'vuelidate';
 import VueI18n from 'vue-i18n';
 import VueDOMPurifyHTML from 'vue-dompurify-html';
 import VueFormulate from '@braid/vue-formulate';
@@ -12,12 +13,12 @@ import {
 } from 'shared/helpers/Validators';
 import router from '../widget/router';
 import { directive as onClickaway } from 'vue-clickaway';
-import { emitter } from 'shared/helpers/mitt';
+
 import { domPurifyConfig } from '../shared/helpers/HTMLSanitizer';
 const PhoneInput = () => import('../widget/components/Form/PhoneInput');
 
 Vue.use(VueI18n);
-
+Vue.use(Vuelidate);
 Vue.use(VueDOMPurifyHTML, domPurifyConfig);
 Vue.directive('on-clickaway', onClickaway);
 
@@ -45,7 +46,7 @@ Vue.use(VueFormulate, {
   },
 });
 // Event Bus
-Vue.prototype.$emitter = emitter;
+window.bus = new Vue();
 
 Vue.config.productionTip = false;
 

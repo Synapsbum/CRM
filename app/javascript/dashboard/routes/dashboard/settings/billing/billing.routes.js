@@ -6,9 +6,7 @@ export default {
   routes: [
     {
       path: frontendURL('accounts/:accountId/settings/billing'),
-      meta: {
-        permissions: ['administrator'],
-      },
+      roles: ['administrator'],
       component: SettingsContent,
       props: {
         headerTitle: 'BILLING_SETTINGS.TITLE',
@@ -20,9 +18,7 @@ export default {
           path: '',
           name: 'billing_settings_index',
           component: Index,
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
         },
       ],
     },

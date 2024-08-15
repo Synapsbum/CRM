@@ -1,16 +1,6 @@
 import types from '../../../mutation-types';
 import { mutations } from '../../conversations';
 
-vi.mock('shared/helpers/mitt', () => ({
-  emitter: {
-    emit: vi.fn(),
-    on: vi.fn(),
-    off: vi.fn(),
-  },
-}));
-
-import { emitter } from 'shared/helpers/mitt';
-
 describe('#mutations', () => {
   describe('#EMPTY_ALL_CONVERSATION', () => {
     it('empty conversations', () => {
@@ -116,7 +106,7 @@ describe('#mutations', () => {
     });
 
     it('add message to the conversation if it does not exist in the store', () => {
-      global.bus = { $emit: vi.fn() };
+      global.bus = { $emit: jest.fn() };
       const state = {
         allConversations: [{ id: 1, messages: [] }],
         selectedChatId: -1,
@@ -140,11 +130,11 @@ describe('#mutations', () => {
           timestamp: 1602256198,
         },
       ]);
-      expect(emitter.emit).not.toHaveBeenCalled();
+      expect(global.bus.$emit).not.toHaveBeenCalled();
     });
 
     it('add message to the conversation and emit scrollToMessage if it does not exist in the store', () => {
-      global.bus = { $emit: vi.fn() };
+      global.bus = { $emit: jest.fn() };
       const state = {
         allConversations: [{ id: 1, messages: [] }],
         selectedChatId: 1,
@@ -168,11 +158,11 @@ describe('#mutations', () => {
           timestamp: 1602256198,
         },
       ]);
-      expect(emitter.emit).toHaveBeenCalledWith('SCROLL_TO_MESSAGE');
+      expect(global.bus.$emit).toHaveBeenCalledWith('SCROLL_TO_MESSAGE');
     });
 
     it('update message if it exist in the store', () => {
-      global.bus = { $emit: vi.fn() };
+      global.bus = { $emit: jest.fn() };
       const state = {
         allConversations: [
           {
@@ -205,7 +195,7 @@ describe('#mutations', () => {
           ],
         },
       ]);
-      expect(emitter.emit).not.toHaveBeenCalled();
+      expect(global.bus.$emit).not.toHaveBeenCalled();
     });
   });
 
@@ -289,107 +279,29 @@ describe('#mutations', () => {
     });
   });
 
-  describe('#SET_ALL_CONVERSATION', () => {
-    it('set all conversation', () => {
-      const state = { allConversations: [{ id: 1 }] };
-      const data = [{ id: 1, name: 'test' }];
-      mutations[types.SET_ALL_CONVERSATION](state, data);
-      expect(state.allConversations).toEqual(data);
-    });
-
-    it('set all conversation in reconnect if selected chat id and conversation id is the same', () => {
-      const state = {
-        allConversations: [{ id: 1, status: 'open' }],
-        selectedChatId: 1,
-      };
-      const data = [{ id: 1, name: 'test', status: 'resolved' }];
-      mutations[types.SET_ALL_CONVERSATION](state, data);
-      expect(state.allConversations).toEqual(data);
-    });
-
-    it('set all conversation in reconnect if selected chat id and conversation id is the same then do not update messages, attachments, dataFetched, allMessagesLoaded', () => {
-      const state = {
-        allConversations: [
-          {
-            id: 1,
-            messages: [{ id: 1, content: 'test' }],
-            dataFetched: true,
-            allMessagesLoaded: true,
-          },
-        ],
-        selectedChatId: 1,
-      };
-      const data = [
-        {
-          id: 1,
-          name: 'test',
-          messages: [{ id: 1, content: 'updated message' }],
-          dataFetched: true,
-          allMessagesLoaded: true,
-        },
-      ];
-      const expected = [
-        {
-          id: 1,
-          name: 'test',
-          messages: [{ id: 1, content: 'test' }],
-          dataFetched: true,
-          allMessagesLoaded: true,
-        },
-      ];
-      mutations[types.SET_ALL_CONVERSATION](state, data);
-      expect(state.allConversations).toEqual(expected);
-    });
-
-    it('set all conversation in reconnect if selected chat id and conversation id is not the same', () => {
-      const state = {
-        allConversations: [{ id: 1, status: 'open' }],
-        selectedChatId: 2,
-      };
-      const data = [{ id: 1, name: 'test', status: 'resolved' }];
-      mutations[types.SET_ALL_CONVERSATION](state, data);
-      expect(state.allConversations).toEqual(data);
-    });
-
-    it('set all conversation in reconnect if selected chat id and conversation id is not the same then update messages', () => {
-      const state = {
-        allConversations: [{ id: 1, messages: [{ id: 1, content: 'test' }] }],
-        selectedChatId: 2,
-      };
-      const data = [
-        { id: 1, name: 'test', messages: [{ id: 1, content: 'tested' }] },
-      ];
-      mutations[types.SET_ALL_CONVERSATION](state, data);
-      expect(state.allConversations).toEqual(data);
-    });
-  });
-
   describe('#SET_ALL_ATTACHMENTS', () => {
     it('set all attachments', () => {
       const state = {
         allConversations: [{ id: 1 }],
-        attachments: {},
       };
       const data = [{ id: 1, name: 'test' }];
       mutations[types.SET_ALL_ATTACHMENTS](state, { id: 1, data });
-      expect(state.attachments[1]).toEqual(data);
+      expect(state.allConversations[0].attachments).toEqual(data);
     });
     it('set attachments key even if the attachments are empty', () => {
       const state = {
         allConversations: [{ id: 1 }],
-        attachments: {},
       };
       const data = [];
       mutations[types.SET_ALL_ATTACHMENTS](state, { id: 1, data });
-      expect(state.attachments[1]).toEqual([]);
+      expect(state.allConversations[0].attachments).toEqual([]);
     });
   });
 
   describe('#ADD_CONVERSATION_ATTACHMENTS', () => {
     it('add conversation attachments', () => {
       const state = {
-        allConversations: [{ id: 1 }],
-        attachments: {},
+        allConversations: [{ id: 1, attachments: [] }],
       };
       const message = {
         conversation_id: 1,
@@ -398,13 +310,19 @@ describe('#mutations', () => {
       };
 
       mutations[types.ADD_CONVERSATION_ATTACHMENTS](state, message);
-      expect(state.attachments[1]).toEqual(message.attachments);
+      expect(state.allConversations[0].attachments).toEqual(
+        message.attachments
+      );
     });
 
     it('should not add duplicate attachments', () => {
       const state = {
-        allConversations: [{ id: 1 }],
-        attachments: { 1: [{ id: 1, name: 'existing' }] },
+        allConversations: [
+          {
+            id: 1,
+            attachments: [{ id: 1, name: 'existing' }],
+          },
+        ],
       };
       const message = {
         conversation_id: 1,
@@ -416,12 +334,12 @@ describe('#mutations', () => {
       };
 
       mutations[types.ADD_CONVERSATION_ATTACHMENTS](state, message);
-      expect(state.attachments[1]).toHaveLength(2);
-      expect(state.attachments[1]).toContainEqual({
+      expect(state.allConversations[0].attachments).toHaveLength(2);
+      expect(state.allConversations[0].attachments).toContainEqual({
         id: 1,
         name: 'existing',
       });
-      expect(state.attachments[1]).toContainEqual({
+      expect(state.allConversations[0].attachments).toContainEqual({
         id: 2,
         name: 'new',
       });
@@ -430,9 +348,6 @@ describe('#mutations', () => {
     it('should not add attachments if chat not found', () => {
       const state = {
         allConversations: [{ id: 1, attachments: [] }],
-        attachments: {
-          1: [],
-        },
       };
       const message = {
         conversation_id: 2,
@@ -441,17 +356,14 @@ describe('#mutations', () => {
       };
 
       mutations[types.ADD_CONVERSATION_ATTACHMENTS](state, message);
-      expect(state.attachments[1]).toHaveLength(0);
+      expect(state.allConversations[0].attachments).toHaveLength(0);
     });
   });
 
   describe('#DELETE_CONVERSATION_ATTACHMENTS', () => {
     it('delete conversation attachments', () => {
       const state = {
-        allConversations: [{ id: 1 }],
-        attachments: {
-          1: [{ id: 1, message_id: 1 }],
-        },
+        allConversations: [{ id: 1, attachments: [{ id: 1, message_id: 1 }] }],
       };
       const message = {
         conversation_id: 1,
@@ -460,15 +372,12 @@ describe('#mutations', () => {
       };
 
       mutations[types.DELETE_CONVERSATION_ATTACHMENTS](state, message);
-      expect(state.attachments[1]).toHaveLength(0);
+      expect(state.allConversations[0].attachments).toHaveLength(0);
     });
 
     it('should not delete attachments for non-matching message id', () => {
       const state = {
-        allConversations: [{ id: 1 }],
-        attachments: {
-          1: [{ id: 1, message_id: 1 }],
-        },
+        allConversations: [{ id: 1, attachments: [{ id: 1, message_id: 1 }] }],
       };
       const message = {
         conversation_id: 1,
@@ -477,13 +386,12 @@ describe('#mutations', () => {
       };
 
       mutations[types.DELETE_CONVERSATION_ATTACHMENTS](state, message);
-      expect(state.attachments[1]).toHaveLength(1);
+      expect(state.allConversations[0].attachments).toHaveLength(1);
     });
 
     it('should not delete attachments if chat not found', () => {
       const state = {
-        allConversations: [{ id: 1 }],
-        attachments: { 1: [{ id: 1, message_id: 1 }] },
+        allConversations: [{ id: 1, attachments: [{ id: 1, message_id: 1 }] }],
       };
       const message = {
         conversation_id: 2,
@@ -492,7 +400,7 @@ describe('#mutations', () => {
       };
 
       mutations[types.DELETE_CONVERSATION_ATTACHMENTS](state, message);
-      expect(state.attachments[1]).toHaveLength(1);
+      expect(state.allConversations[0].attachments).toHaveLength(1);
     });
   });
 
@@ -501,56 +409,6 @@ describe('#mutations', () => {
       const state = { contextMenuChatId: 1 };
       mutations[types.SET_CONTEXT_MENU_CHAT_ID](state, 2);
       expect(state.contextMenuChatId).toEqual(2);
-    });
-  });
-
-  describe('#SET_CHAT_LIST_FILTERS', () => {
-    it('set chat list filters', () => {
-      const conversationFilters = {
-        inboxId: 1,
-        assigneeType: 'me',
-        status: 'open',
-        sortBy: 'created_at',
-        page: 1,
-        labels: ['label'],
-        teamId: 1,
-        conversationType: 'mention',
-      };
-      const state = { conversationFilters: conversationFilters };
-      mutations[types.SET_CHAT_LIST_FILTERS](state, conversationFilters);
-      expect(state.conversationFilters).toEqual(conversationFilters);
-    });
-  });
-
-  describe('#UPDATE_CHAT_LIST_FILTERS', () => {
-    it('update chat list filters', () => {
-      const conversationFilters = {
-        inboxId: 1,
-        assigneeType: 'me',
-        status: 'open',
-        sortBy: 'created_at',
-        page: 1,
-        labels: ['label'],
-        teamId: 1,
-        conversationType: 'mention',
-      };
-      const state = { conversationFilters: conversationFilters };
-      mutations[types.UPDATE_CHAT_LIST_FILTERS](state, {
-        inboxId: 2,
-        updatedWithin: 20,
-        assigneeType: 'all',
-      });
-      expect(state.conversationFilters).toEqual({
-        inboxId: 2,
-        assigneeType: 'all',
-        status: 'open',
-        sortBy: 'created_at',
-        page: 1,
-        labels: ['label'],
-        teamId: 1,
-        conversationType: 'mention',
-        updatedWithin: 20,
-      });
     });
   });
 });

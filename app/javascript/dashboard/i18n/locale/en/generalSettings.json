@@ -95,9 +95,7 @@
   },
   "NETWORK": {
     "NOTIFICATION": {
-      "OFFLINE": "Offline",
-      "RECONNECTING": "Reconnecting...",
-      "RECONNECT_SUCCESS": "Reconnected"
+      "OFFLINE": "Offline"
     },
     "BUTTON": {
       "REFRESH": "Refresh"

@@ -15,6 +15,10 @@ module MicrosoftConcern
 
   private
 
+  def parsed_body
+    @parsed_body ||= Rack::Utils.parse_nested_query(@response.raw_response.body)
+  end
+
   def base_url
     ENV.fetch('FRONTEND_URL', 'http://localhost:3000')
   end

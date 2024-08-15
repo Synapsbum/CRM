@@ -15,15 +15,14 @@ export default {
       children: [
         {
           path: '',
+          name: 'attributes_wrapper',
           redirect: 'list',
         },
         {
           path: 'list',
           name: 'attributes_list',
           component: AttributesHome,
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
         },
       ],
     },

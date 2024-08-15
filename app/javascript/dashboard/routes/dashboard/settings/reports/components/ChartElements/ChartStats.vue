@@ -1,28 +1,3 @@
-<script>
-import reportMixin from 'dashboard/mixins/reportMixin';
-export default {
-  mixins: [reportMixin],
-  props: {
-    metric: {
-      type: Object,
-      default: () => ({}),
-    },
-  },
-  methods: {
-    trendColor(value, key) {
-      if (this.isAverageMetricType(key)) {
-        return value > 0
-          ? 'border-red-500 text-red-500'
-          : 'border-green-500 text-green-500';
-      }
-      return value < 0
-        ? 'border-red-500 text-red-500'
-        : 'border-green-500 text-green-500';
-    },
-  },
-};
-</script>
-
 <template>
   <div class="text-slate-900 dark:text-slate-100">
     <span class="text-sm">
@@ -50,3 +25,27 @@ export default {
     </div>
   </div>
 </template>
+<script>
+import reportMixin from 'dashboard/mixins/reportMixin';
+export default {
+  mixins: [reportMixin],
+  props: {
+    metric: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  methods: {
+    trendColor(value, key) {
+      if (this.isAverageMetricType(key)) {
+        return value > 0
+          ? 'border-red-500 text-red-500'
+          : 'border-green-500 text-green-500';
+      }
+      return value < 0
+        ? 'border-red-500 text-red-500'
+        : 'border-green-500 text-green-500';
+    },
+  },
+};
+</script>

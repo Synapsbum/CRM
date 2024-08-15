@@ -18,9 +18,7 @@ export const routes = [
         path: '',
         name: 'notifications_index',
         component: NotificationsView,
-        meta: {
-          permissions: ['administrator', 'agent'],
-        },
+        roles: ['administrator', 'agent'],
       },
     ],
   },

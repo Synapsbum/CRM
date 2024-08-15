@@ -8,9 +8,7 @@ export default {
   routes: [
     {
       path: frontendURL('accounts/:accountId/settings/agent-bots'),
-      meta: {
-        permissions: ['administrator'],
-      },
+      roles: ['administrator'],
       component: SettingsContent,
       props: {
         headerTitle: 'AGENT_BOTS.HEADER',
@@ -22,25 +20,19 @@ export default {
           path: '',
           name: 'agent_bots',
           component: Bot,
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
         },
         {
           path: 'csml/new',
           name: 'agent_bots_csml_new',
           component: CsmlNewBot,
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
         },
         {
           path: 'csml/:botId',
           name: 'agent_bots_csml_edit',
           component: CsmlEditBot,
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
         },
       ],
     },

@@ -1,55 +1,3 @@
-<script>
-export default {
-  props: {
-    to: {
-      type: String,
-      default: '',
-    },
-    label: {
-      type: String,
-      default: '',
-    },
-    labelColor: {
-      type: String,
-      default: '',
-    },
-    shouldTruncate: {
-      type: Boolean,
-      default: false,
-    },
-    icon: {
-      type: String,
-      default: '',
-    },
-    warningIcon: {
-      type: String,
-      default: '',
-    },
-    showChildCount: {
-      type: Boolean,
-      default: false,
-    },
-    childItemCount: {
-      type: Number,
-      default: 0,
-    },
-  },
-  computed: {
-    showIcon() {
-      return {
-        'overflow-hidden whitespace-nowrap text-ellipsis': this.shouldTruncate,
-      };
-    },
-    isCountZero() {
-      return this.childItemCount === 0;
-    },
-    menuTitle() {
-      return this.shouldTruncate ? this.label : '';
-    },
-  },
-};
-</script>
-
 <template>
   <router-link
     v-slot="{ href, isActive, navigate }"
@@ -117,11 +65,11 @@ export default {
         </div>
         <span
           v-if="warningIcon"
-          class="inline-flex mr-1 bg-red-50 dark:bg-red-900 p-0.5 rounded-sm"
+          class="inline-flex rounded-sm mr-1 bg-slate-100"
         >
           <fluent-icon
-            v-tooltip.top-end="$t('SIDEBAR.REAUTHORIZE')"
-            class="text-xxs text-red-500 dark:text-red-300"
+            v-tooltip.top-end="$t('SIDEBAR.FACEBOOK_REAUTHORIZE')"
+            class="text-xxs"
             :icon="warningIcon"
             size="12"
           />
@@ -130,3 +78,54 @@ export default {
     </li>
   </router-link>
 </template>
+<script>
+export default {
+  props: {
+    to: {
+      type: String,
+      default: '',
+    },
+    label: {
+      type: String,
+      default: '',
+    },
+    labelColor: {
+      type: String,
+      default: '',
+    },
+    shouldTruncate: {
+      type: Boolean,
+      default: false,
+    },
+    icon: {
+      type: String,
+      default: '',
+    },
+    warningIcon: {
+      type: String,
+      default: '',
+    },
+    showChildCount: {
+      type: Boolean,
+      default: false,
+    },
+    childItemCount: {
+      type: Number,
+      default: 0,
+    },
+  },
+  computed: {
+    showIcon() {
+      return {
+        'overflow-hidden whitespace-nowrap text-ellipsis': this.shouldTruncate,
+      };
+    },
+    isCountZero() {
+      return this.childItemCount === 0;
+    },
+    menuTitle() {
+      return this.shouldTruncate ? this.label : '';
+    },
+  },
+};
+</script>

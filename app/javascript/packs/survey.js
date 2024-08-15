@@ -1,11 +1,12 @@
 import Vue from 'vue';
+import Vuelidate from 'vuelidate';
 import VueI18n from 'vue-i18n';
 import App from '../survey/App.vue';
 import i18n from '../survey/i18n';
 import store from '../survey/store';
-import { emitter } from 'shared/helpers/mitt';
 
 Vue.use(VueI18n);
+Vue.use(Vuelidate);
 
 const i18nConfig = new VueI18n({
   locale: 'en',
@@ -13,7 +14,7 @@ const i18nConfig = new VueI18n({
 });
 
 // Event Bus
-Vue.prototype.$emitter = emitter;
+window.bus = new Vue();
 
 Vue.config.productionTip = false;
 

@@ -518,13 +518,13 @@
     "DOWNLOAD_FAILED": "Failed to download SLA Reports",
     "DROPDOWN": {
       "ADD_FIlTER": "Añadir Filtro",
-      "CLEAR_ALL": "Limpiar todo",
-      "CLEAR_FILTER": "Limpiar filtros",
+      "CLEAR_ALL": "Clear all",
+      "CLEAR_FILTER": "Clear filter",
       "EMPTY_LIST": "No se encontraron resultados",
-      "NO_FILTER": "No hay filtros disponibles",
-      "SEARCH": "Buscar filtro",
+      "NO_FILTER": "No filters available",
+      "SEARCH": "Search filter",
       "INPUT_PLACEHOLDER": {
-        "SLA": "Nombre de SLA",
+        "SLA": "SLA name",
         "AGENTS": "Nombre del agente",
         "INBOXES": "Nombre de la bandeja de entrada",
         "LABELS": "Nombre de la etiqueta",
@@ -546,17 +546,17 @@
         "TOOLTIP": "Total SLA misses in a certain period"
       },
       "NO_OF_CONVERSATIONS": {
-        "LABEL": "Número de conversaciones",
+        "LABEL": "Number of Conversations",
         "TOOLTIP": "Total number of conversations with SLA"
       }
     },
     "TABLE": {
       "HEADER": {
-        "POLICY": "Política",
+        "POLICY": "Policy",
         "CONVERSATION": "Conversación",
         "AGENT": "Agente"
       },
-      "VIEW_DETAILS": "Ver detalles"
+      "VIEW_DETAILS": "View Details"
     }
   }
 }

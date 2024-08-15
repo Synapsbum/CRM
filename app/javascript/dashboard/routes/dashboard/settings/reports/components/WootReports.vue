@@ -1,5 +1,29 @@
+<template>
+  <div class="flex-1 overflow-auto p-4">
+    <woot-button
+      color-scheme="success"
+      class-names="button--fixed-top"
+      icon="arrow-download"
+      @click="downloadReports"
+    >
+      {{ downloadButtonLabel }}
+    </woot-button>
+    <report-filters
+      v-if="filterItemsList"
+      :type="type"
+      :filter-items-list="filterItemsList"
+      :group-by-filter-items-list="groupByfilterItemsList"
+      :selected-group-by-filter="selectedGroupByFilter"
+      @date-range-change="onDateRangeChange"
+      @filter-change="onFilterChange"
+      @group-by-filter-change="onGroupByFilterChange"
+      @business-hours-toggle="onBusinessHoursToggle"
+    />
+    <report-container v-if="filterItemsList.length" :group-by="groupBy" />
+  </div>
+</template>
+
 <script>
-import { useAlert } from 'dashboard/composables';
 import ReportFilters from './ReportFilters.vue';
 import ReportContainer from '../ReportContainer.vue';
 import { GROUP_BY_FILTER } from '../constants';
@@ -97,7 +121,7 @@ export default {
             businessHours,
           });
         } catch {
-          useAlert(this.$t('REPORT.DATA_FETCHING_FAILED'));
+          this.showAlert(this.$t('REPORT.DATA_FETCHING_FAILED'));
         }
       });
     },
@@ -179,28 +203,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div class="flex-1 p-4 overflow-auto">
-    <woot-button
-      color-scheme="success"
-      class-names="button--fixed-top"
-      icon="arrow-download"
-      @click="downloadReports"
-    >
-      {{ downloadButtonLabel }}
-    </woot-button>
-    <ReportFilters
-      v-if="filterItemsList"
-      :type="type"
-      :filter-items-list="filterItemsList"
-      :group-by-filter-items-list="groupByfilterItemsList"
-      :selected-group-by-filter="selectedGroupByFilter"
-      @dateRangeChange="onDateRangeChange"
-      @filterChange="onFilterChange"
-      @groupByFilterChange="onGroupByFilterChange"
-      @businessHoursToggle="onBusinessHoursToggle"
-    />
-    <ReportContainer v-if="filterItemsList.length" :group-by="groupBy" />
-  </div>
-</template>

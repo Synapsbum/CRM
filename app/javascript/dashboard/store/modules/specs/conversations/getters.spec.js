@@ -245,18 +245,30 @@ describe('#getters', () => {
 
   describe('#getSelectedChatAttachments', () => {
     it('Returns attachments in selected chat', () => {
-      const attachments = {
-        1: [
-          { id: 1, file_name: 'test1' },
-          { id: 2, file_name: 'test2' },
+      const state = {};
+      const getSelectedChat = {
+        attachments: [
+          {
+            id: 1,
+            file_name: 'test1',
+          },
+          {
+            id: 2,
+            file_name: 'test2',
+          },
         ],
       };
-      const selectedChatId = 1;
       expect(
-        getters.getSelectedChatAttachments({ selectedChatId, attachments })
+        getters.getSelectedChatAttachments(state, { getSelectedChat })
       ).toEqual([
-        { id: 1, file_name: 'test1' },
-        { id: 2, file_name: 'test2' },
+        {
+          id: 1,
+          file_name: 'test1',
+        },
+        {
+          id: 2,
+          file_name: 'test2',
+        },
       ]);
     });
   });
@@ -265,47 +277,6 @@ describe('#getters', () => {
     it('returns the context menu chat id', () => {
       const state = { contextMenuChatId: 1 };
       expect(getters.getContextMenuChatId(state)).toEqual(1);
-    });
-  });
-
-  describe('#getChatListFilters', () => {
-    it('get chat list filters', () => {
-      const conversationFilters = {
-        inboxId: 1,
-        assigneeType: 'me',
-        status: 'open',
-        sortBy: 'created_at',
-        page: 1,
-        labels: ['label'],
-        teamId: 1,
-        conversationType: 'mention',
-      };
-      const state = { conversationFilters: conversationFilters };
-      expect(getters.getChatListFilters(state)).toEqual(conversationFilters);
-    });
-  });
-
-  describe('#getAppliedConversationFiltersQuery', () => {
-    it('get applied conversation filters query', () => {
-      const filtersList = [
-        {
-          attribute_key: 'status',
-          filter_operator: 'equal_to',
-          values: [{ id: 'snoozed', name: 'Snoozed' }],
-          query_operator: 'and',
-        },
-      ];
-      const state = { appliedFilters: filtersList };
-      expect(getters.getAppliedConversationFiltersQuery(state)).toEqual({
-        payload: [
-          {
-            attribute_key: 'status',
-            filter_operator: 'equal_to',
-            query_operator: undefined,
-            values: ['snoozed'],
-          },
-        ],
-      });
     });
   });
 });

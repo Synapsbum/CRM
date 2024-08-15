@@ -1,37 +1,14 @@
 import { frontendURL } from '../../../../helper/URLHelper';
-const SettingsWrapper = () => import('../SettingsWrapper.vue');
-const IntegrationHooks = () => import('./IntegrationHooks.vue');
-const Index = () => import('./Index.vue');
+
+const SettingsContent = () => import('../Wrapper.vue');
 const Webhook = () => import('./Webhooks/Index.vue');
 const DashboardApps = () => import('./DashboardApps/Index.vue');
+const ShowIntegration = () => import('./ShowIntegration.vue');
 const Slack = () => import('./Slack.vue');
-const SettingsContent = () => import('../Wrapper.vue');
+const Index = () => import('./Index.vue');
 
 export default {
   routes: [
-    {
-      path: frontendURL('accounts/:accountId/settings/integrations'),
-      component: SettingsWrapper,
-      props: {},
-      children: [
-        {
-          path: '',
-          name: 'settings_applications',
-          component: Index,
-          meta: {
-            permissions: ['administrator'],
-          },
-        },
-        {
-          path: 'dashboard_apps',
-          component: DashboardApps,
-          name: 'settings_integrations_dashboard_apps',
-          meta: {
-            permissions: ['administrator'],
-          },
-        },
-      ],
-    },
     {
       path: frontendURL('accounts/:accountId/settings/integrations'),
       component: SettingsContent,
@@ -50,32 +27,41 @@ export default {
       },
       children: [
         {
+          path: '',
+          name: 'settings_integrations',
+          component: Index,
+          roles: ['administrator'],
+        },
+        {
           path: 'webhook',
           component: Webhook,
           name: 'settings_integrations_webhook',
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
+        },
+        {
+          path: 'dashboard-apps',
+          component: DashboardApps,
+          name: 'settings_integrations_dashboard_apps',
+          roles: ['administrator'],
         },
         {
           path: 'slack',
           name: 'settings_integrations_slack',
           component: Slack,
-          meta: {
-            permissions: ['administrator'],
-          },
+          roles: ['administrator'],
           props: route => ({ code: route.query.code }),
         },
         {
           path: ':integration_id',
-          name: 'settings_applications_integration',
-          component: IntegrationHooks,
-          meta: {
-            permissions: ['administrator'],
+          name: 'settings_integrations_integration',
+          component: ShowIntegration,
+          roles: ['administrator'],
+          props: route => {
+            return {
+              integrationId: route.params.integration_id,
+              code: route.query.code,
+            };
           },
-          props: route => ({
-            integrationId: route.params.integration_id,
-          }),
         },
       ],
     },
