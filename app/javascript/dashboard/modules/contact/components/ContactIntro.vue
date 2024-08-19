@@ -1,46 +1,3 @@
-<template>
-  <div class="contact--intro">
-    <thumbnail
-      :src="contact.thumbnail"
-      size="64px"
-      :username="obfuscatePhoneNumber(contact.name)"
-      :status="contact.availability_status"
-    />
-
-    <div class="contact--details">
-      <h2 class="text-lg contact--name">
-        {{ obfuscatePhoneNumber(contact.name) }}
-      </h2>
-      <h3 class="text-base contact--work">
-        {{ contact.title }}
-        <i v-if="company.name" class="icon ion-minus-round" />
-        <span class="company-name">{{ company.name }}</span>
-      </h3>
-      <p v-if="additionalAttributes.description" class="contact--bio">
-        {{ additionalAttributes.description }}
-      </p>
-      <social-icons :social-profiles="socialProfiles" />
-    </div>
-    <div class="contact-actions">
-      <woot-button
-        class="new-message"
-        size="small expanded"
-        icon="ion-paper-airplane"
-        @click="onNewMessageClick"
-      >
-        {{ $t('CONTACT_PANEL.NEW_MESSAGE') }}
-      </woot-button>
-      <woot-button
-        variant="hollow"
-        size="small expanded"
-        icon="edit"
-        @click="onEditClick"
-      >
-        {{ $t('EDIT_CONTACT.BUTTON_LABEL') }}
-      </woot-button>
-    </div>
-  </div>
-</template>
 <script>
 import Thumbnail from 'dashboard/components/widgets/Thumbnail.vue';
 import SocialIcons from 'dashboard/routes/dashboard/conversation/contact/SocialIcons.vue';
@@ -75,19 +32,6 @@ export default {
     },
   },
   methods: {
-    obfuscatePhoneNumber(phoneNumber) {
-      // Check if the phone number is not null or undefined
-      if (phoneNumber) {
-        // Get the first 5 characters of the phone number
-        const firstFiveDigits = phoneNumber.slice(0, 5);
-        // Replace the rest of the characters with '*'
-        const obscuredPart = phoneNumber.slice(5).replace(/\d/g, '*');
-        // Return the obfuscated phone number
-        return `${firstFiveDigits}${obscuredPart}`;
-      }
-      // Return empty string if phone number is null or undefined
-      return phoneNumber;
-    },
     onEditClick() {
       this.$emit('edit');
     },
@@ -97,6 +41,50 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="contact--intro">
+    <Thumbnail
+      :src="contact.thumbnail"
+      size="64px"
+      :username="contact.name"
+      :status="contact.availability_status"
+    />
+
+    <div class="contact--details">
+      <h2 class="text-lg contact--name">
+        {{ contact.name }}
+      </h2>
+      <h3 class="text-base contact--work">
+        {{ contact.title }}
+        <i v-if="company.name" class="icon ion-minus-round" />
+        <span class="company-name">{{ company.name }}</span>
+      </h3>
+      <p v-if="additionalAttributes.description" class="contact--bio">
+        {{ additionalAttributes.description }}
+      </p>
+      <SocialIcons :social-profiles="socialProfiles" />
+    </div>
+    <div class="contact-actions">
+      <woot-button
+        class="new-message"
+        size="small expanded"
+        icon="ion-paper-airplane"
+        @click="onNewMessageClick"
+      >
+        {{ $t('CONTACT_PANEL.NEW_MESSAGE') }}
+      </woot-button>
+      <woot-button
+        variant="hollow"
+        size="small expanded"
+        icon="edit"
+        @click="onEditClick"
+      >
+        {{ $t('EDIT_CONTACT.BUTTON_LABEL') }}
+      </woot-button>
+    </div>
+  </div>
+</template>
 
 <style scoped lang="scss">
 .contact--details {

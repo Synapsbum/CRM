@@ -3,7 +3,7 @@
     "TITLE": "Chatwootにログイン",
     "EMAIL": {
       "LABEL": "Eメール",
-      "PLACEHOLDER": "E-Mail Adresi",
+      "PLACEHOLDER": "example@companyname.com",
       "ERROR": "正しいメールアドレスを入力してください"
     },
     "PASSWORD": {

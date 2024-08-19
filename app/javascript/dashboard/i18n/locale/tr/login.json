@@ -3,7 +3,7 @@
     "TITLE": "Betsin CRM'de oturum açın",
     "EMAIL": {
       "LABEL": "E-Posta",
-      "PLACEHOLDER": "ornek@betsin.com",
+      "PLACEHOLDER": "ornek@firmadi.com",
       "ERROR": "Lütfen geçerli bir e-posta adresi girin"
     },
     "PASSWORD": {

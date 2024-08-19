@@ -1,5 +1,6 @@
 import { mapGetters } from 'vuex';
 import wootConstants from 'dashboard/constants/globals';
+import { emitter } from 'shared/helpers/mitt';
 
 import { CMD_AI_ASSIST } from './commandBarBusEvents';
 import { REPLY_EDITOR_MODES } from 'dashboard/components/widgets/WootWriter/constants';
@@ -64,6 +65,7 @@ export default {
       currentChat: 'getSelectedChat',
       replyMode: 'draftMessages/getReplyEditorMode',
       contextMenuChatId: 'getContextMenuChatId',
+      teams: 'teams/getTeams',
     }),
     draftMessage() {
       return this.$store.getters['draftMessages/get'](this.draftKey);
@@ -77,7 +79,18 @@ export default {
     conversationId() {
       return this.currentChat?.id;
     },
-
+    hasAnAssignedTeam() {
+      return !!this.currentChat?.meta?.team;
+    },
+    teamsList() {
+      if (this.hasAnAssignedTeam) {
+        return [
+          { id: 0, name: this.$t('TEAMS_SETTINGS.LIST.NONE') },
+          ...this.teams,
+        ];
+      }
+      return this.teams;
+    },
     statusActions() {
       const isOpen =
         this.currentChat?.status === wootConstants.STATUS_TYPE.OPEN;
@@ -318,7 +331,7 @@ export default {
         section: this.$t('COMMAND_BAR.SECTIONS.AI_ASSIST'),
         priority: item,
         icon: item.icon,
-        handler: () => bus.$emit(CMD_AI_ASSIST, item.key),
+        handler: () => emitter.emit(CMD_AI_ASSIST, item.key),
       }));
       return [
         {

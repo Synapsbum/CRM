@@ -48,11 +48,11 @@
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "Artık özel alan adınızda e-postalar alabilirsiniz."
       }
     },
-    "UPDATE_CHATWOOT": "",
+    "UPDATE_CHATWOOT": "%{latestChatwootVersion}",
     "LEARN_MORE": "Daha Fazla",
-    "PAYMENT_PENDING": "Ödemeniz bekliyor. Devam etmek için ödeme bilgilerinizi güncelleyin.",
-    "LIMITS_UPGRADE": "Hesabınız kullanım sınırlarını aştı, lütfen Chatwoot'u kullanmaya devam etmek için planınızı yükseltin",
-    "OPEN_BILLING": "Fatura Detayları"
+    "PAYMENT_PENDING": "",
+    "LIMITS_UPGRADE": "",
+    "OPEN_BILLING": ""
   },
   "FORMS": {
     "MULTISELECT": {
@@ -95,7 +95,9 @@
   },
   "NETWORK": {
     "NOTIFICATION": {
-      "OFFLINE": "Çevrimdışı"
+      "OFFLINE": "Çevrimdışı",
+      "RECONNECTING": "Reconnecting...",
+      "RECONNECT_SUCCESS": "Reconnected"
     },
     "BUTTON": {
       "REFRESH": "Yenile"
@@ -154,7 +156,7 @@
       "UNTIL_TOMORROW": "Yarına kadar",
       "UNTIL_NEXT_MONTH": "Bir sonraki aya kadar",
       "AN_HOUR_FROM_NOW": "Bir saat sonra kadar",
-      "CUSTOM": "Özel...",
+      "UNTIL_CUSTOM_TIME": "Özel...",
       "CHANGE_APPEARANCE": "Görünümü Değiştir",
       "LIGHT_MODE": "Açık Mod",
       "DARK_MODE": "Koyu Mod",

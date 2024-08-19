@@ -1,9 +1,9 @@
 {
   "LOGIN": {
-    "TITLE": "Login to Betsin CRM",
+    "TITLE": "Login to Chatwoot",
     "EMAIL": {
       "LABEL": "อีเมล์",
-      "PLACEHOLDER": "E-Mail Adresi",
+      "PLACEHOLDER": "example@companyname.com",
       "ERROR": "กรุณากรอกที่อยู่อีเมล์ให้ถูกต้อง"
     },
     "PASSWORD": {

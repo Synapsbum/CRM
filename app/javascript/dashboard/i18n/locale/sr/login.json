@@ -1,9 +1,9 @@
 {
   "LOGIN": {
-    "TITLE": "Login to Betsin CRM",
+    "TITLE": "Login to Chatwoot",
     "EMAIL": {
       "LABEL": "E-pošta",
-      "PLACEHOLDER": "E-Mail Adresi",
+      "PLACEHOLDER": "example@companyname.com",
       "ERROR": "Molim vas unesite ispravnu adresu e-pošte"
     },
     "PASSWORD": {
