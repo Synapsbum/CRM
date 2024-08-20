@@ -77,7 +77,7 @@ const reports = accountId => ({
       label: 'REPORTS_SLA',
       hasSubMenu: false,
       featureFlag: FEATURE_FLAGS.SLA,
-      toState: frontendURL(`accounts/${accountId}/reports/sla`),
+      toState: frontendURL(`accounts/${accountId}`),
       toStateName: 'sla_reports',
     },
   ],

@@ -178,30 +178,6 @@ const settings = accountId => ({
       isEnterpriseOnly: true,
       featureFlag: FEATURE_FLAGS.AUDIT_LOGS,
     },
-    {
-      icon: 'document-list-clock',
-      label: 'SLA',
-      hasSubMenu: false,
-      meta: {
-        permissions: ['administrator'],
-      },
-      toState: frontendURL(`accounts/${accountId}/settings/sla/list`),
-      toStateName: 'sla_list',
-      isEnterpriseOnly: true,
-      featureFlag: FEATURE_FLAGS.SLA,
-      beta: true,
-    },
-    {
-      icon: 'credit-card-person',
-      label: 'BILLING',
-      hasSubMenu: false,
-      meta: {
-        permissions: ['administrator'],
-      },
-      toState: frontendURL(`accounts/${accountId}/settings/billing`),
-      toStateName: 'billing_settings_index',
-      showOnlyOnCloud: true,
-    },
   ],
 });
 

@@ -78,23 +78,6 @@ const openInNewTab = url => {
       >
         <slot name="description">{{ description }}</slot>
       </p>
-      <CustomBrandPolicyWrapper :show-on-custom-branded-instance="false">
-        <a
-          v-if="helpURL && linkText"
-          :href="helpURL"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="sm:inline-flex hidden gap-1 w-fit items-center text-woot-500 dark:text-woot-500 text-sm font-medium hover:underline"
-        >
-          {{ linkText }}
-          <fluent-icon
-            size="16"
-            icon="chevron-right"
-            type="outline"
-            class="flex-shrink-0 text-woot-500 dark:text-woot-500"
-          />
-        </a>
-      </CustomBrandPolicyWrapper>
     </div>
     <div
       class="flex items-start justify-start w-full gap-3 sm:hidden flex-wrap"
