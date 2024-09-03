@@ -143,8 +143,8 @@ export default {
     },
     maskedContactName() {
     const contactName = this.currentContact.name;
-    if (contactName.startsWith('+')) {
-      return contactName.slice(0, 6) + '***';
+    if (!this.isAdmin && contactName && contactName.length > 6) {
+      return contactName.slice(0, 4) + '******' + contactName.slice(-2);
     }
     return contactName;
     },
