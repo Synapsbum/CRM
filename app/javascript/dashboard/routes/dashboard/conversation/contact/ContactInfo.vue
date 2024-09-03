@@ -91,6 +91,20 @@ export default {
     confirmDeleteMessage() {
       return ` ${this.contact.name}?`;
     },
+    maskedPhoneNumber() {
+    const phoneNumber = this.contact.phone_number;
+    if (phoneNumber && phoneNumber.startsWith('+')) {
+      return phoneNumber.slice(0, 6) + '***';
+    }
+    return phoneNumber;
+    },
+    maskedIdentifier() {
+      const identifier = this.contact.identifier;
+      if (identifier && identifier.length > 5) {
+        return identifier.slice(0, 5) + '***';
+      }
+      return identifier;
+    },
   },
   methods: {
     dynamicTime,
@@ -231,16 +245,16 @@ export default {
             show-copy
           />
           <ContactInfoRow
-            :href="contact.phone_number ? `tel:${contact.phone_number}` : ''"
-            :value="contact.phone_number"
+            :href="maskedPhoneNumber ? `tel:${maskedPhoneNumber}` : ''"
+            :value="maskedPhoneNumber"
             icon="call"
             emoji="📞"
             :title="$t('CONTACT_PANEL.PHONE_NUMBER')"
             show-copy
           />
           <ContactInfoRow
-            v-if="contact.identifier"
-            :value="contact.identifier"
+            v-if="maskedIdentifier"
+            :value="maskedIdentifier"
             icon="contact-identify"
             emoji="🪪"
             :title="$t('CONTACT_PANEL.IDENTIFIER')"

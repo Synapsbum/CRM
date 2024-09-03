@@ -131,6 +131,13 @@ export default {
         FEATURE_FLAGS.LINEAR
       );
     },
+    maskedContactName() {
+    const contactName = this.currentContact.name;
+    if (contactName.startsWith('+')) {
+      return contactName.slice(0, 6) + '***';
+    }
+    return contactName;
+    },
   },
 };
 </script>
@@ -170,7 +177,7 @@ export default {
               <span
                 class="text-base font-medium leading-tight text-slate-900 dark:text-slate-100"
               >
-                {{ currentContact.name }}
+                {{ maskedContactName }}
               </span>
             </woot-button>
             <fluent-icon

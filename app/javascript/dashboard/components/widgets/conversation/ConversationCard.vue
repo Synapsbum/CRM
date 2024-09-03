@@ -141,6 +141,13 @@ export default {
     hasSlaPolicyId() {
       return this.chat?.sla_policy_id;
     },
+    maskedContactName() {
+    const contactName = this.currentContact.name;
+    if (contactName.startsWith('+')) {
+      return contactName.slice(0, 6) + '***';
+    }
+    return contactName;
+    },
   },
   methods: {
     onCardClick(e) {
@@ -283,7 +290,7 @@ export default {
       <h4
         class="conversation--user text-sm my-0 mx-2 capitalize pt-0.5 text-ellipsis font-medium overflow-hidden whitespace-nowrap w-[calc(100%-70px)] text-slate-900 dark:text-slate-100"
       >
-        {{ currentContact.name }}
+        {{ maskedContactName }}
       </h4>
       <MessagePreview
         v-if="lastMessageInChat"
