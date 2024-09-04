@@ -69,6 +69,13 @@ export default {
       }
       return '';
     },
+    maskedPhoneNumber() {
+    const phoneNumber = this.phoneNumber;
+    if (!this.isAdmin && phoneNumber && phoneNumber.length > 6) {
+      return phoneNumber.slice(0, 4) + '******' + phoneNumber.slice(-2);
+    }
+    return phoneNumber;
+    },
   },
   watch: {
     value() {
@@ -194,7 +201,7 @@ export default {
       </span>
       <input
         ref="phoneNumberInput"
-        :value="phoneNumber"
+        :value="maskedPhoneNumber"
         type="tel"
         class="!mb-0 !rounded-tl-none !rounded-bl-none !border-0 font-normal !w-full dark:!bg-slate-900 text-base !px-1.5 placeholder:font-normal"
         :placeholder="placeholder"

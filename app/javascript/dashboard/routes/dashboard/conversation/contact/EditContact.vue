@@ -37,6 +37,13 @@ export default {
         this.contact.id
       );
     },
+    maskedContactName() {
+    const contactName = this.contact.name;
+    if (!this.isAdmin && contactName && contactName.length > 6) {
+      return contactName.slice(0, 4) + '******' + contactName.slice(-2);
+    }
+    return contactName;
+    },
   },
 };
 </script>
@@ -47,7 +54,7 @@ export default {
     <div class="flex flex-col h-auto overflow-auto">
       <woot-modal-header
         :header-title="`${$t('EDIT_CONTACT.TITLE')} - ${
-          contact.name || contact.email
+          maskedContactName || contact.email
         }`"
         :header-content="$t('EDIT_CONTACT.DESC')"
       />
