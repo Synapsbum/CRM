@@ -100,6 +100,16 @@ Rails.application.configure do
   # :mandrill for Mandrill
   # :postmark for Postmark
   # :sendgrid for Sendgrid
+
+  config.action_mailer.smtp_settings = {
+  address: 'smtp.us-west-1.mailertogo.net',
+  port: 587,
+  user_name: 'f558fd9428e851d6a89102f1b0e06957',
+  password: 'd2f54169fbe4d02e448cdb6b82e295b0658ac052ffbed84879a37194cfb1cc7c',
+  authentication: 'plain',
+  enable_starttls_auto: true
+  }
+
   config.action_mailbox.ingress = ENV.fetch('RAILS_INBOUND_EMAIL_SERVICE', 'relay').to_sym
 
   Rails.application.routes.default_url_options = { host: ENV['FRONTEND_URL'] }
