@@ -93,17 +93,24 @@ export default {
     },
     maskedPhoneNumber() {
     const phoneNumber = this.contact.phone_number;
-    if (phoneNumber && phoneNumber.startsWith('+')) {
-      return phoneNumber.slice(0, 6) + '***';
+    if (!this.isAdmin && phoneNumber && phoneNumber.length > 6) {
+      return phoneNumber.slice(0, 4) + '******' + phoneNumber.slice(-2);
     }
     return phoneNumber;
     },
     maskedIdentifier() {
       const identifier = this.contact.identifier;
-      if (identifier && identifier.length > 5) {
-        return identifier.slice(0, 5) + '***';
-      }
+      if (!this.isAdmin && identifier && identifier.length > 6) {
+      return identifier.slice(0, 4) + '******' + identifier.slice(-2);
+    }
       return identifier;
+    },
+    maskedContactName() {
+    const contactName = this.contact.name;
+    if (!this.isAdmin && contactName && contactName.length > 6) {
+      return contactName.slice(0, 4) + '******' + contactName.slice(-2);
+    }
+    return contactName;
     },
   },
   methods: {
@@ -186,7 +193,7 @@ export default {
           v-if="showAvatar"
           :src="contact.thumbnail"
           size="56px"
-          :username="contact.name"
+          :username="maskedContactName"
           :status="contact.availability_status"
         />
         <woot-button
@@ -202,7 +209,7 @@ export default {
           <h3
             class="flex-shrink max-w-full min-w-0 my-0 text-base capitalize break-words text-slate-800 dark:text-slate-100"
           >
-            {{ contact.name }}
+            {{ maskedContactName }}
           </h3>
           <div class="flex flex-row items-center gap-1">
             <fluent-icon
