@@ -201,7 +201,7 @@ export default {
       </span>
       <input
         ref="phoneNumberInput"
-        :value="maskedPhoneNumber"
+        :value="phoneNumber"
         type="tel"
         class="!mb-0 !rounded-tl-none !rounded-bl-none !border-0 font-normal !w-full dark:!bg-slate-900 text-base !px-1.5 placeholder:font-normal"
         :placeholder="placeholder"
