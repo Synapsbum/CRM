@@ -64,9 +64,11 @@ export default {
         const additional = item.additional_attributes || {};
         const { last_activity_at: lastActivityAt } = item;
         const { created_at: createdAt } = item;
+        const maskedPhoneNumber = this.maskPhoneNumber(item.phone_number);
+        const maskedName = this.maskName(item.name);
         return {
           ...item,
-          phone_number: item.phone_number || '---',
+          phone_number: maskedPhoneNumber || '---',
           company: additional.company_name || '---',
           profiles: additional.social_profiles || {},
           city: additional.city || '---',
@@ -241,6 +243,17 @@ export default {
   methods: {
     setSortConfig() {
       this.sortConfig = { [this.sortParam]: this.sortOrder };
+    },
+    maskPhoneNumber(phoneNumber) {
+    if (!phoneNumber) return '---';
+    return phoneNumber.slice(0, 4) + '******' + phoneNumber.slice(-2);
+    },
+    maskName(contactName) {
+    if (!contactName) return '---';
+    if (contactName && contactName.length > 6  && contactName.startsWith('+')) {
+      return contactName.slice(0, 4) + '******' + contactName.slice(-2);
+    }
+    return contactName;
     },
   },
 };
